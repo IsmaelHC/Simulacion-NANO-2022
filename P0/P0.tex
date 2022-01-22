@@ -1,5 +1,15 @@
+
 \documentclass{article}
-\usepackage[utf8]{inputenc}
+\setlength{\parskip}{5pt} % esp. entre parrafos
+\setlength{\parindent}{0pt} % esp. al inicio de un parrafo
+\usepackage{amsmath} % mates
+\usepackage[sort&compress,numbers]{natbib} % referencias
+\usepackage{url} % que las URLs se vean lindos
+\usepackage[top=25mm,left=20mm,right=20mm,bottom=25mm]{geometry} % margenes
+\usepackage{hyperref} % ligas de URLs
+\usepackage{graphicx} % poner figuras
+\usepackage[spanish]{babel} % otros idiomas
+\usepackage{listings}
 
 \title{Tarea 0}
 \author{Ismael Hernández}
@@ -9,21 +19,83 @@
 
 \maketitle
 
-\section{Introducción}
+\section{Insertar ecuación e imagen}
 
-Ejemplo Ecuación \eqref{equ}:
+Ejemplo Ecuación \eqref{equ1}:
 \begin{equation}
   f(x) = 2 \sin(x) - \int_0^\infty \frac{1}{1 + x} \text{d}x.
-  \label{equ}
+  \label{equ1}
 \end{equation}
+Ejemplo \eqref{equ2}:
 \begin{equation}
   f(x) = 2 \sin(x).
-  \label{equ}
+  \label{equ2}
 \end{equation}
 
-\section{Referencias}
+\begin{figure}[h] % figura
+    \centering
+    \includegraphics[width=30mm]{descarga.jpg} % archivo
+    \caption{UANL tomado de \url{https://www.uanl.edu.mx} con licencia CC.}
+    \label{uanl}
+\end{figure}
 
-\bibitem{ref1} LIBRO X, ISMAEL, 2022, UANL
-\bibitem{ref2} LIBRO X2, ISMAEL, 2022, UANL
+\section{¿Cómo referenciar imagenes y fuentes?}
+Ejemplo cita de fuentes \citep{ejemplo:1}.
+
+Para hacer referencia a una figrua \ref{uanl}
+
+\section{Insertar codigos .py }
+\lstset{language=Python}
+\lstset{frame=lines}
+\lstset{caption={Codigo insertado directamente}}
+\lstset{label={lst:code_direct}}
+\lstset{basicstyle=\footnotesize}
+\begin{lstlisting}
+import numpy as np
+from math import sqrt, exp, sin, cos, tan, tanh, log
+import matplotlib.pyplot as plt 
+import numpy as np
+import pandas as pd
+    
+
+
+
+x=5
+y=8
+l=[x,y,x+x]
+
+print('LA SUMA ES',sum(l))
+data = [1, 4, 2, 4, 2, 5, 6, 7, 4, 76, 3, 2, 5, 6, 7]
+from scipy.stats import describe
+describe(data)
+
+matriz=np.matrix([[1,3,4,5],[3,4,6,9]])
+print(matriz)
+f=matriz[1,3]
+
+sin_f=sin(f)
+if sin_f >0.1:
+    print('mayor a 0.1')
+    
+datos = pd.read_csv('P0.csv', sep=' ')
+print(datos)
+
+plt.plot([1, 2, 3],[10,20,30]) 
+plt.title('matplotlib.pyplot.plot() example 1') 
+plt.draw() 
+plt.show()
+plt.close()
+
+datos = [1.6, 4.6, 2.6, 3.6, 5.6, 6.6, 3.5, 2.2, 4.4, 5.2, 5.4, 7.6, 5.8, 4.4, 6.4]
+plt.hist(datos)
+plt.show()
+plt.close()
+\end{lstlisting}
+\bibliography{simu}
+\bibliographystyle{plainnat}
+
+
+
+
 
 \end{document}
