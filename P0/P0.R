@@ -25,3 +25,7 @@ print(datos)
 x=1:20
 y=sin(x)
 plot(x,y,type="l")
+
+for(n in 2:13) {k=2^n; cat(k,system.time(matrix(runif(k*k),nrow=k))[3], '\n')}
+library(pryr)
+for(n in 2:13) {k=2^n; cat(k,object_size(matrix(runif(k*k),nrow=k)), '\n')}
