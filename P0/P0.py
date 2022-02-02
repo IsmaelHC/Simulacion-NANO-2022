@@ -53,3 +53,15 @@ for k in range(menor, mayor + 1):
     diferencia = despues - antes # segundos
     print('ordenar', n, 'elementos toma', diferencia, 'segundos')
 
+import sys
+from sys import getsizeof
+import numpy as np
+from random import randint
+menor=15
+mayor=21
+for k in range(menor, mayor + 1):
+    n=2**k
+    lista = [ randint(1, 1000) for i in range(n) ]
+    espacio=getsizeof(lista)
+    print('un vector de',n,'elementos ocupa',espacio,'bytes de memoria')
+    
