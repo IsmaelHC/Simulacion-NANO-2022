@@ -1,0 +1,60 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage[top=25mm,left=20mm,right=20mm,bottom=25mm]{geometry}
+\title{P0 TIME}
+\author{Ismael Crespo}
+\date{February 2022}
+
+\begin{document}
+
+\maketitle
+
+\section{Introducción}
+Este reporte presenta los resultados de la medición de tiempo y memoria requerida para trabajar con matrices de \emph{n filas * n columnas} en R y Python. Los valores de \emph{n} fueron seleccionados haciendo pruebas para determinar el máximo permitido por el equipo de computo utilizado. 
+
+\section{Medición de tiempos y espacio }
+El equipo utilizado para la medición de rendimientos es una computadora portatil \emph{Acer E5-573 } con un Procesador \emph{Intel Core i5 2.20GHz},una memoria RAM instalada de 8.0 GB y un sistema operativo de 64 bits.
+\subsection{Medición en R.} 
+Se crearon matrices de $2^n * 2^n$ con números aleataorios y se utilizaron las funciones sysetm.time y object.size Listing \ref{lst1} para para medir el tiempo requerido para crear cada matriz y el espacio requerido en la memoria RAM. Los intervalos de valor n se encontraron experimentando uno a uno hasta encontrar un máximo permisible por el equipo de computo en en n=14. Los resultados se presentan en la tabla \ref{tabla 1}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+n  & 2\textasciicircum{}n & Espacio en RAM (Bytes) & Tiempo (Seg) \\ \hline
+2  & 4                    & 344                    & 0            \\ \hline
+3  & 8                    & 728                    & 0            \\ \hline
+4  & 16                   & 2264                   & 0            \\ \hline
+5  & 32                   & 8408                   & 0            \\ \hline
+6  & 64                   & 32984                  & 0            \\ \hline
+7  & 128                  & 131288                 & 0            \\ \hline
+8  & 256                  & 524504                 & 0            \\ \hline
+9  & 512                  & 2097368                & 0.01         \\ \hline
+10 & 1024                 & 8388824                & 0.04         \\ \hline
+11 & 2048                 & 33554648               & 0.17         \\ \hline
+12 & 4096                 & 134217944              & 0.79         \\ \hline
+13 & 8192                 & 536871128              & 2.82         \\ \hline
+14 & 16384                & 2147483864             & 17.91        \\ \hline
+\end{tabular}
+\caption{Tiempo y espacio requerido para cada matriz}
+\label{tabla 1}
+\end{table}
+
+\lstset{language=Python}
+\lstset{frame=lines}
+\lstset{caption={Codigo en R para medir rendimeintos}}
+\lstset{label={lst1}}
+\lstset{basicstyle=\footnotesize}
+\begin{lstlisting}
+for(n in 2:14) {k=2^n; cat(k,system.time(matrix(runif(k*k),
+nrow=k))[3], '\n')}
+library(pryr)
+for(n in 2:14) {k=2^n; cat(k,object_size(matrix(runif(k*k),
+nrow=k)), '\n')}
+\end{lstlisting}
+
+
+\subsection{Medición en Python.} 
+Se crearon matrices de $2^n * 2^n$ con números aleataorios y se utilizaron las funciones sysetm.time y object.size Listing \ref{lst1} para para medir el tiempo requerido para crear cada matriz y el espacio requerido en la memoria RAM. Los intervalos de valor n se encontraron experimentando uno a uno hasta encontrar un máximo permisible por el equipo de computo en en n=14. Los resultados se presentan en la tabla \ref{tabla 1}
+\end{document}
