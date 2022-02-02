@@ -1,6 +1,10 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
+\usepackage{pgfplots}
+\pgfplotsset{compat = newest}
+\usepackage{tikz}
+  \usetikzlibrary{automata,topaths}
 \usepackage[top=25mm,left=20mm,right=20mm,bottom=25mm]{geometry}
 \title{P0 TIME}
 \author{Ismael Crespo}
@@ -16,7 +20,7 @@ Este reporte presenta los resultados de la medición de tiempo y memoria requeri
 \section{Medición de tiempos y espacio }
 El equipo utilizado para la medición de rendimientos es una computadora portatil \emph{Acer E5-573 } con un Procesador \emph{Intel Core i5 2.20GHz},una memoria RAM instalada de 8.0 GB y un sistema operativo de 64 bits.
 \subsection{Medición en R.} 
-Se crearon matrices de $2^n * 2^n$ con números aleataorios y se utilizaron las funciones sysetm.time y object.size Listing \ref{lst1} para para medir el tiempo requerido para crear cada matriz y el espacio requerido en la memoria RAM. Los intervalos de valor n se encontraron experimentando uno a uno hasta encontrar un máximo permisible por el equipo de computo en en n=14. Los resultados se presentan en la tabla \ref{tabla 1}
+Se crearon matrices de $2^n * 2^n$ con números aleataorios y se utilizaron las funciones sysetm.time y object.size Listing \ref{lst1} para para medir el tiempo requerido para crear cada matriz y el espacio requerido en la memoria RAM. Los intervalos de valor n se encontraron experimentando uno a uno hasta encontrar un máximo permisible por el equipo de computo en en n=14. Los resultados se presentan en la tabla \ref{tabla 1} \ref{grafica1}
 
 \begin{table}[h]
 \centering
@@ -40,7 +44,40 @@ n  & $2^n$ & Espacio en RAM (Bytes) & Tiempo (Seg) \\ \hline
 \caption{Tiempo y espacio requerido para cada matriz}
 \label{tabla 1}
 \end{table}
+\begin{figure}
+    \centering 
+   
+    \caption{Tiempo requerido para ordenar una matriz de $2^n * 2^n$ elementos  aleatorios en R}
+    \label{grafica1}
 
+\begin{tikzpicture}
+\begin{axis}[
+    xmin = 2, xmax = 14,
+    ymin = 0, ymax = 19,
+    xtick distance = 1,
+    ytick distance = 1,
+    grid = both,
+    minor tick num = 1,
+    major grid style = {lightgray},
+    minor grid style = {lightgray!25},
+    width = \textwidth,
+    height = 0.5\textwidth,
+    xlabel = {$Tiempo$},
+    ylabel = {$n$},]
+ 
+% Plot data from a file
+\addplot[
+    smooth,
+    thin,
+    red,
+    dashed
+] file[skip first] {R_time.dat};
+
+
+\end{axis}
+ 
+\end{tikzpicture}
+\end{figure}
 \lstset{language=Python}
 \lstset{frame=lines}
 \lstset{caption={Codigo en R para medir rendimeintos}}
@@ -56,7 +93,7 @@ nrow=k)), '\n')}
 
 
 \subsection{Medición en Python.} 
-Para medir el rendimiento en Python sin necesidad de usar una libreria adicional se utilizó el Listing \ref{lst2}, que guarda la hora antes de comenzar a ordenar número aleatorios en vectores de $2^n$, para restarsela a la hora final y obtener el tiempo que tarda en hacer estos procedimeinto, el espacio ocupado por cada vector se obtuvo utilizando la función \emph{getsizeof}. Los resultados se presentan en la tabla \ref{tabla 2}.
+Para medir el rendimiento en Python sin necesidad de usar una libreria adicional se utilizó el Listing \ref{lst2},y en la grafica \ref{grafica2} que guarda la hora antes de comenzar a ordenar número aleatorios en vectores de $2^n$, para restarsela a la hora final y obtener el tiempo que tarda en hacer estos procedimeinto, el espacio ocupado por cada vector se obtuvo utilizando la función \emph{getsizeof}. Los resultados se presentan en la tabla \ref{tabla 2}.
 \lstset{language=Python}
 \lstset{frame=lines}
 \lstset{caption={Codigo en Python para medir rendimeintos}}
@@ -106,6 +143,41 @@ n  & $2^n$& Tiempo [Seg] & Espacio [Bytes]\\ \hline
 \caption{Tiempo requerido para ordendar cada vector en Python}
 \label{tabla 2}
 \end{table}
+
+\begin{figure}
+    \centering 
+   
+    \caption{Tiempo requerido para ordenar un vector de $2^n$ números aleatorios en Python}
+    \label{grafica2}
+
+\begin{tikzpicture}
+\begin{axis}[
+    xmin = 15, xmax = 21,
+    ymin = 0, ymax = .5,
+    xtick distance = 1,
+    ytick distance = .1,
+    grid = both,
+    minor tick num = 1,
+    major grid style = {lightgray},
+    minor grid style = {lightgray!25},
+    width = \textwidth,
+    height = 0.5\textwidth,
+    xlabel = {$Tiempo$},
+    ylabel = {$n$},]
+ 
+% Plot data from a file
+\addplot[
+    smooth,
+    thin,
+    red,
+    dashed
+] file[skip first] {python_time.dat};
+
+
+\end{axis}
+ 
+\end{tikzpicture}
+\end{figure}
 
 \section{Conclusiones}
 El equipo de computo utilizado presenta un numero maximo permitible para realizar trabajos matriciales y dependen de cada herramienta utilizada para progrmar así como de las tareas realizadas en paralelo. Es necesario conocer los estados optimos para sacar el máximo potencial al equipo.
