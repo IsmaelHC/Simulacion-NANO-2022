@@ -11,7 +11,7 @@
 \maketitle
 
 \section{Introducción}
-Este reporte presenta los resultados de la medición de tiempo y memoria requerida para trabajar con matrices vectores de \emph{n filas y n columnas} en R y Python. Los valores de \emph{n} fueron seleccionados haciendo pruebas para determinar el máximo permitido por el equipo de computo utilizado. 
+Este reporte presenta los resultados de la medición de tiempo y memoria requerida para trabajar con matrices y vectores de \emph{n filas y n columnas} en R y Python. Los valores de \emph{n} fueron seleccionados haciendo pruebas para determinar el máximo permitido por el equipo de computo utilizado. 
 
 \section{Medición de tiempos y espacio }
 El equipo utilizado para la medición de rendimientos es una computadora portatil \emph{Acer E5-573 } con un Procesador \emph{Intel Core i5 2.20GHz},una memoria RAM instalada de 8.0 GB y un sistema operativo de 64 bits.
@@ -22,7 +22,7 @@ Se crearon matrices de $2^n * 2^n$ con números aleataorios y se utilizaron las 
 \centering
 \begin{tabular}{|l|l|l|l|}
 \hline
-n  & 2\textasciicircum{}n & Espacio en RAM (Bytes) & Tiempo (Seg) \\ \hline
+n  & $2^n$ & Espacio en RAM (Bytes) & Tiempo (Seg) \\ \hline
 2  & 4                    & 344                    & 0            \\ \hline
 3  & 8                    & 728                    & 0            \\ \hline
 4  & 16                   & 2264                   & 0            \\ \hline
@@ -56,7 +56,7 @@ nrow=k)), '\n')}
 
 
 \subsection{Medición en Python.} 
-Para medir el rendimiento en Python sin necesidad de usar una libreria adicional se utilizó un Listing \ref{lst2}, que guarda la hora antes de comenzar a ordenar número aleatorios en vectores de $2^n$, para restarsela a la hora final y obtener el tiempo que tarda en hacer este procedimeintos. Los resultados se presentan en la tabla \ref{tabla 2}.
+Para medir el rendimiento en Python sin necesidad de usar una libreria adicional se utilizó el Listing \ref{lst2}, que guarda la hora antes de comenzar a ordenar número aleatorios en vectores de $2^n$, para restarsela a la hora final y obtener el tiempo que tarda en hacer estos procedimeintos. Los resultados se presentan en la tabla \ref{tabla 2}.
 \lstset{language=Python}
 \lstset{frame=lines}
 \lstset{caption={Codigo en Python para medir rendimeintos}}
@@ -82,7 +82,7 @@ for k in range(menor, mayor + 1):
 \centering
 \begin{tabular}{|l|l|l|l|}
 \hline
-n  & 2\textasciicircum{}n Tiempo (Seg) \\ \hline
+n  & $2^n$& Tiempo (Seg) \\ \hline
 15  & 32768                    & 0.0                            \\ \hline
 16  & 65536                    & 0.011695                            \\ \hline
 17  & 131072                   & 0.0325872                          \\ \hline
@@ -94,4 +94,7 @@ n  & 2\textasciicircum{}n Tiempo (Seg) \\ \hline
 \caption{Tiempo requerido para ordendar cada vector en Python}
 \label{tabla 2}
 \end{table}
+
+\section{Conclusiones}
+El equipo de computo utilizado presenta un numero maximo permitible para realizar trabajos matriciales y dependen de cada herramienta utilizada para progrmar así como de las tareas realizadas en paralelo. Es necesario conocer los estados optimos para sacar el máximo potencial al equipo.
 \end{document}
