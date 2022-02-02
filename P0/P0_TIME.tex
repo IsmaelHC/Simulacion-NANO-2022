@@ -56,7 +56,7 @@ nrow=k)), '\n')}
 
 
 \subsection{Medición en Python.} 
-Para medir el rendimiento en Python sin necesidad de usar una libreria adicional se utilizó el Listing \ref{lst2}, que guarda la hora antes de comenzar a ordenar número aleatorios en vectores de $2^n$, para restarsela a la hora final y obtener el tiempo que tarda en hacer estos procedimeintos. Los resultados se presentan en la tabla \ref{tabla 2}.
+Para medir el rendimiento en Python sin necesidad de usar una libreria adicional se utilizó el Listing \ref{lst2}, que guarda la hora antes de comenzar a ordenar número aleatorios en vectores de $2^n$, para restarsela a la hora final y obtener el tiempo que tarda en hacer estos procedimeinto, el espacio ocupado por cada vector se obtuvo utilizando la función \emph{getsizeof}. Los resultados se presentan en la tabla \ref{tabla 2}.
 \lstset{language=Python}
 \lstset{frame=lines}
 \lstset{caption={Codigo en Python para medir rendimeintos}}
@@ -77,19 +77,31 @@ for k in range(menor, mayor + 1):
     despues = time() # volver ver la hora
     diferencia = despues - antes # segundos
     print('ordenar', n, 'elementos toma', diferencia, 'segundos')
+    
+import sys
+from sys import getsizeof
+import numpy as np
+from random import randint
+menor=15
+mayor=21
+for k in range(menor, mayor + 1):
+    n=2**k
+    lista = [ randint(1, 1000) for i in range(n) ]
+    espacio=getsizeof(lista)
+    print('un vector de',n,'elementos ocupa',espacio,'bytes de memoria')
 \end{lstlisting}
 \begin{table}[h]
 \centering
 \begin{tabular}{|l|l|l|l|}
 \hline
-n  & $2^n$& Tiempo (Seg) \\ \hline
-15  & 32768                    & 0.0                            \\ \hline
-16  & 65536                    & 0.011695                            \\ \hline
-17  & 131072                   & 0.0325872                          \\ \hline
-18  & 262144                   & 0.0680267                              \\ \hline
-19  & 524288                   & 0.14938402                              \\ \hline
-20  & 1048576                  & 0.22246694                             \\ \hline
-21  & 2097152                  & 0.41567270                             \\ \hline
+n  & $2^n$& Tiempo [Seg] & Espacio [Bytes]\\ \hline
+15  & 32768                    & 0.0      &  277336                    \\ \hline
+16  & 65536                    & 0.011695 & 562488                           \\ \hline
+17  & 131072                   & 0.0325872  & 1140568                        \\ \hline
+18  & 262144                   & 0.0680267   &  2312472                        \\ \hline
+19  & 524288                   & 0.14938402   & 4688312                           \\ \hline
+20  & 1048576                  & 0.22246694  & 8448728                           \\ \hline
+21  & 2097152                  & 0.41567270  & 17128280                           \\ \hline
 \end{tabular}
 \caption{Tiempo requerido para ordendar cada vector en Python}
 \label{tabla 2}
