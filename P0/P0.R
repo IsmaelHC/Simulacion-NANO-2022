@@ -29,3 +29,14 @@ plot(x,y,type="l")
 for(n in 2:13) {k=2^n; cat(k,system.time(matrix(runif(k*k),nrow=k))[3], '\n')}
 library(pryr)
 for(n in 2:13) {k=2^n; cat(k,object_size(matrix(runif(k*k),nrow=k)), '\n')}
+
+library(parallel)
+detectCores()
+detectCores(logical=FALSE)
+sapply(seq(5,21,2),function(z)sin(z))
+equipo=makeCluster(3)
+chamba=10000
+equipo=makeCluster(2)
+system.time(sum(parSapply(equipo,seq(5,chambra,3),function(x)sin(x)))
+stopCluster(equipo)
+
