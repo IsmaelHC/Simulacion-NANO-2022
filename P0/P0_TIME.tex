@@ -4,36 +4,40 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat = newest}
 \usepackage{tikz}
-  \usetikzlibrary{automata,topaths}
-\usepackage[top=25mm,left=20mm,right=20mm,bottom=25mm]{geometry}
+\usepackage[spanish]{babel}
+\usetikzlibrary{automata,topaths}
+\usepackage[top=20mm,left=20mm,right=20mm,bottom=25mm]{geometry}
 \title{P0 TIME}
 \author{Ismael Crespo}
-\date{February 2022}
-
+\date{\today}
+\renewcommand\lstlistingname{Código}
+\usepackage{minted}
 \begin{document}
 
 \maketitle
 
 \section{Introducción}
-Este reporte presenta los resultados de la medición de tiempo y memoria requerida para trabajar con matrices y vectores de \emph{n filas y n columnas} en R y Python. Los valores de \emph{n} fueron seleccionados haciendo pruebas para determinar el máximo permitido por el equipo de computo utilizado. 
+Este reporte presenta los resultados de la medición de tiempo y memoria requerida para trabajar con matrices y vectores de \emph{$n$ filas y $n$ columnas} en R y Python. Los valores de \emph{n} fueron seleccionados haciendo pruebas para determinar el máximo permitido por el equipo de cómputo utilizado. 
 
 \section{Medición de tiempos y espacio }
-El equipo utilizado para la medición de rendimientos es una computadora portatil \emph{Acer E5-573 } con un Procesador \emph{Intel Core i5 2.20GHz},una memoria RAM instalada de 8.0 GB y un sistema operativo de 64 bits.
+El equipo utilizado para la medición de rendimientos es una computadora portatil \emph{Acer E5-573 } con un Procesador \emph{Intel Core i5 2.20 GHz},una memoria RAM instalada de 8.0 GB y un sistema operativo de 64 bits.
 \subsection{Medición en R.} 
-Se crearon matrices de $2^n * 2^n$ con números aleataorios y se utilizaron las funciones sysetm.time y object.size Listing \ref{lst1} para para medir el tiempo requerido para crear cada matriz y el espacio requerido en la memoria RAM. Los intervalos de valor n se encontraron experimentando uno a uno hasta encontrar un máximo permisible por el equipo de computo en en n=14. Los resultados se presentan en la tabla \ref{tabla 1} \ref{grafica1}
+Se crearon matrices de $2^n * 2^n$ con números aleataorios y se utilizaron las funciones \texttt{system.time} y \texttt{object.size} Listing \ref{lst1} para para medir el tiempo requerido para crear cada matriz y el espacio requerido en la memoria RAM. Los intervalos de valor $n$ se encontraron experimentando uno a uno hasta encontrar un máximo permisible por el equipo de computo en en $n=14$. Los resultados se presentan en el cuadro \ref{tabla 1} y figura\ref{grafica1}
 
 \begin{table}[h]
 \centering
-\begin{tabular}{|l|l|l|l|}
+\caption{Tiempo y espacio requerido para cada matriz}
+\label{tabla 1}
+\begin{tabular}{|c|r|r|r|}
 \hline
 n  & $2^n$ & Espacio en RAM (Bytes) & Tiempo (Seg) \\ \hline
-2  & 4                    & 344                    & 0            \\ \hline
-3  & 8                    & 728                    & 0            \\ \hline
-4  & 16                   & 2264                   & 0            \\ \hline
-5  & 32                   & 8408                   & 0            \\ \hline
-6  & 64                   & 32984                  & 0            \\ \hline
-7  & 128                  & 131288                 & 0            \\ \hline
-8  & 256                  & 524504                 & 0            \\ \hline
+2  & 4                    & 344                    & ---            \\ \hline
+3  & 8                    & 728                    & ---            \\ \hline
+4  & 16                   & 2264                   & ---            \\ \hline
+5  & 32                   & 8408                   & ---            \\ \hline
+6  & 64                   & 32984                  & ---            \\ \hline
+7  & 128                  & 131288                 & ---            \\ \hline
+8  & 256                  & 524504                 & ---            \\ \hline
 9  & 512                  & 2097368                & 0.01         \\ \hline
 10 & 1024                 & 8388824                & 0.04         \\ \hline
 11 & 2048                 & 33554648               & 0.17         \\ \hline
@@ -41,15 +45,10 @@ n  & $2^n$ & Espacio en RAM (Bytes) & Tiempo (Seg) \\ \hline
 13 & 8192                 & 536871128              & 2.82         \\ \hline
 14 & 16384                & 2147483864             & 17.91        \\ \hline
 \end{tabular}
-\caption{Tiempo y espacio requerido para cada matriz}
-\label{tabla 1}
+
 \end{table}
 \begin{figure}
     \centering 
-   
-    \caption{Tiempo requerido para ordenar una matriz de $2^n * 2^n$ elementos  aleatorios en R}
-    \label{grafica1}
-
 \begin{tikzpicture}
 \begin{axis}[
     xmin = 2, xmax = 14,
@@ -77,29 +76,33 @@ n  & $2^n$ & Espacio en RAM (Bytes) & Tiempo (Seg) \\ \hline
 \end{axis}
  
 \end{tikzpicture}
+\caption{Tiempo requerido para ordenar una matriz de $2^n * 2^n$ elementos  aleatorios en R}
+    \label{grafica1}
 \end{figure}
 \lstset{language=Python}
 \lstset{frame=lines}
 \lstset{caption={Codigo en R para medir rendimeintos}}
 \lstset{label={lst1}}
 \lstset{basicstyle=\footnotesize}
-\begin{lstlisting}
+\begin{listing}
+\begin{minted}{R}
 for(n in 2:14) {k=2^n; cat(k,system.time(matrix(runif(k*k),
 nrow=k))[3], '\n')}
 library(pryr)
 for(n in 2:14) {k=2^n; cat(k,object_size(matrix(runif(k*k),
 nrow=k)), '\n')}
-\end{lstlisting}
+\end{minted}
+\caption{Codigo en R}
+\label{listing:2}
+\end{listing}
 
 
 \subsection{Medición en Python.} 
 Para medir el rendimiento en Python sin necesidad de usar una libreria adicional se utilizó el Listing \ref{lst2},y en la grafica \ref{grafica2} que guarda la hora antes de comenzar a ordenar número aleatorios en vectores de $2^n$, para restarsela a la hora final y obtener el tiempo que tarda en hacer estos procedimeinto, el espacio ocupado por cada vector se obtuvo utilizando la función \emph{getsizeof}. Los resultados se presentan en la tabla \ref{tabla 2}.
-\lstset{language=Python}
-\lstset{frame=lines}
-\lstset{caption={Codigo en Python para medir rendimeintos}}
-\lstset{label={lst2}}
-\lstset{basicstyle=\footnotesize}
-\begin{lstlisting}
+\begin{listing}
+\caption{Codigo en Python}
+\label{listing:1}
+\begin{minted}{python}
 from random import randint
 desde = 1
 hasta = 1000
@@ -126,13 +129,14 @@ for k in range(menor, mayor + 1):
     lista = [ randint(1, 1000) for i in range(n) ]
     espacio=getsizeof(lista)
     print('un vector de',n,'elementos ocupa',espacio,'bytes de memoria')
-\end{lstlisting}
+\end{minted}
+\end{listing}
 \begin{table}[h]
 \centering
-\begin{tabular}{|l|l|l|l|}
+\begin{tabular}{|c|r|r|r|}
 \hline
 n  & $2^n$& Tiempo [Seg] & Espacio [Bytes]\\ \hline
-15  & 32768                    & 0.0      &  277336                    \\ \hline
+15  & 32768                    & ---      &  277336                    \\ \hline
 16  & 65536                    & 0.011695 & 562488                           \\ \hline
 17  & 131072                   & 0.0325872  & 1140568                        \\ \hline
 18  & 262144                   & 0.0680267   &  2312472                        \\ \hline
@@ -140,7 +144,7 @@ n  & $2^n$& Tiempo [Seg] & Espacio [Bytes]\\ \hline
 20  & 1048576                  & 0.22246694  & 8448728                           \\ \hline
 21  & 2097152                  & 0.41567270  & 17128280                           \\ \hline
 \end{tabular}
-\caption{Tiempo requerido para ordendar cada vector en Python}
+\caption{Tiempo requerido para ordenar cada vector en Python}
 \label{tabla 2}
 \end{table}
 
