@@ -19,7 +19,7 @@
 \maketitle
 
 \section{Introducción}
-El movimiento Browniano fue reportado por primera vez en 1785, por el físico Jan Ingenhausz, al observar el comportamiento de carbón pulverizado en la superficie del alcohol. Este fenómeno fue nombrado como tal por Robert Brown que en 1828 reporto el movimiento de paritculas finas, incluyendo el polen, polvo y hollín en la superficie del agua. Einstein lo explica mas tarde en 1905 como movimientos térmicos aleatorios de moléculas de fluido que chocan contra las partículas microscópicas, lo que hace que experimenten un paseo aleatorio.La idea de un movimiento Browniano es la de una caminata de pasos aleatorios en dirección y magnitud Figura \ref{BM} con una distribución Gausiana para la posición después de un tiempo $t$, comprender el comportamiento de las partículas bajo estos movimientos es importante para conocer la difusión entre las fases solidas y liquidas, así como para la dinámica de las micelas\citep{K.Joseph_et_al_1996}.
+El movimiento Browniano fue reportado por primera vez en 1785, por el físico Jan Ingenhausz, al observar el comportamiento de carbón pulverizado en la superficie del alcohol. Este fenómeno fue nombrado como tal por Robert Brown que en 1828 reporto el movimiento de partículas finas, incluyendo el polen, polvo y hollín en la superficie del agua. Einstein lo explica mas tarde en 1905 como movimientos térmicos aleatorios de moléculas de fluido que chocan contra las partículas microscópicas, lo que hace que experimenten un paseo aleatorio.La idea de un movimiento Browniano es la de una caminata de pasos aleatorios en dirección y magnitud Figura \ref{BM} con una distribución Gausiana para la posición después de un tiempo $t$, comprender el comportamiento de las partículas bajo estos movimientos es importante para conocer la difusión entre las fases solidas y liquidas, así como para la dinámica de las micelas\citep{K.Joseph_et_al_1996}.
 \begin{figure}[h] % figura
     \centering
     \includegraphics[width=90mm]{image.png} % archivo
@@ -30,9 +30,9 @@ El movimiento Browniano fue reportado por primera vez en 1785, por el físico Ja
 Por medio de la simulación repetida un numero de veces $n_r$ de distintas caminatas aleatorias se pretende analizar y comprender la relación entre el número de pasos $n_p$ y el número de dimensiones con la distancia $d$ final con respecto al origen .
 \section{Equipo y Método}
 \subsection{Computadora y software}
-El equipo utilizado para la medición de rendimientos es una computadora portatil \emph{Acer E5-573 } con un Procesador \emph{Intel Core i5 2.20 GHz},una memoria RAM instalada de 8.0 GB y un sistema operativo de 64 bits y la herramienta \emph{R 4.1.2} se realizo la simulación de un movimiento Browniano. El código computacional genera caminatas aleatorias de $100,1000 y 10000$ pasos en $1,2,3,4,5$ dimensiones, cada uno las repite $30$ veces y las gráfica por separado en un diagrama caja-bigote. 
+El equipo utilizado para la medición de rendimientos es una computadora portátil \emph{Acer E5-573 } con un Procesador \emph{Intel Core i5 2.20 GHz},una memoria RAM instalada de 8.0 GB y un sistema operativo de 64 bits y la herramienta \emph{R 4.1.2} se realizo la simulación de un movimiento Browniano. El código computacional genera caminatas aleatorias de $100,1000 y 10000$ pasos en $1,2,3,4,5$ dimensiones, cada uno las repite $30$ veces y las gráfica por separado en un diagrama caja-bigote. 
 \subsection{Programación en R}
-El  Código \ref{listing:1} utiliza la función  \texttt{runif} para decidir, primero en que dimensión de las que se esta simulando se realizará el recorrido y posteriormente si será un retrocesos o avance en esta dimensión, el código guarda la distancia euclideana $d=\sqrt{(\sum(p1^2,p2^2,p3^2.....)})$ máxima recorrida  para cada uno de los experimentos y posteriormente los gráfica. El tiempo de computo para el total del experimento es de $14.63$. En el cuadro \ref{cuadro 1} se presentan algunos tiempos de computo variando el número de pasos, las dimensiones y las repeteciones.
+El  Código \ref{listing:1} utiliza la función  \texttt{runif} para decidir, primero en que dimensión de las que se esta simulando se realizará el recorrido y posteriormente si será un retrocesos o avance en esta dimensión, el código guarda la distancia euclideana $d=\sqrt{(\sum(p1^2,p2^2,p3^2.....)})$ máxima recorrida  para cada uno de los experimentos y posteriormente los gráfica. El tiempo de computo para el total del experimento es de $14.63$. En el cuadro \ref{cuadro 1} se presentan algunos tiempos de computo variando el número de pasos, las dimensiones y las repeticiones.
 
 \begin{table}[]
 \centering
@@ -48,7 +48,7 @@ El  Código \ref{listing:1} utiliza la función  \texttt{runif} para decidir, pr
 \end{table}
 \lstset{language=Python}
 \lstset{frame=lines}
-\lstset{caption={Codigo en R para generar caminatas aleatorias}}
+\lstset{caption={Código en R para generar caminatas aleatorias}}
 \lstset{label={lst1}}
 \lstset{basicstyle=\footnotesize}
 \begin{listing}
@@ -64,13 +64,11 @@ eje<-0
 DISTANCIA=numeric()
 mayor<-array(rep(0,cor*num_ejes*length(dur)),dim=c(cor,num_ejes,length(dur)))
 pos<- array(rep(0, cor*num_ejes*num_ejes), dim=c(cor,num_ejes, num_ejes))
- 
  for(p in dur){
   for (pasos in 1:p) {
   for (caminata in 1:cor){
   for (e in 1:num_ejes){
     eje<-round(runif(1,1,e))
-     
       if (runif(1) < 0.5){
       pos[caminata,eje,e] <- pos[caminata,eje,e] + 1
       }
@@ -78,8 +76,6 @@ pos<- array(rep(0, cor*num_ejes*num_ejes), dim=c(cor,num_ejes, num_ejes))
        pos[caminata,eje,e]<- pos[caminata,eje,e] - 1
       }
    euclideana = sqrt(sum((pos[caminata,,e]**2))) # 
-   
-   
  if (p==100){
   j=1
 }
@@ -90,9 +86,7 @@ pos<- array(rep(0, cor*num_ejes*num_ejes), dim=c(cor,num_ejes, num_ejes))
   j=3
 }
  mayor[caminata,e,j] = max(mayor[caminata,e,j],euclideana)
-}} 
-}
-}
+}}}}
 for (i in 1:num_ejes){
  for (j in 1:length(dur)){
   D=c(mayor[,i,j])
@@ -109,8 +103,6 @@ library(ggplot2)
  ggplot(data, aes(x=DIMENSIONES, y=DISTANCIA, fill=treatment)) +
 geom_boxplot()
 print(run_time)
-
-
 \end{minted}
 \caption{Codigo en R}
 \label{listing:1}
@@ -128,3 +120,4 @@ Los movimientos Brownianos son definidos como caminatas aleatorias, es posible s
 \bibliography{simu}
 \bibliographystyle{plainnat}
 \end{document}
+
