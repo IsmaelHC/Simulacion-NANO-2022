@@ -60,7 +60,6 @@ dim2=plot_matrix[:,1]
 dim3=plot_matrix[:,2]
 
 x=np.array([0.2,0.4,0.6,0.8])
-
 plt.plot(x,dim1, marker="o",label="10")
 plt.plot(x,dim2,marker="o",label="15")
 plt.plot(x,dim3,marker="o",label="20")
