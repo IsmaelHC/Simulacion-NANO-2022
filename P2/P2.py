@@ -3,13 +3,18 @@ from random import random
 import numpy as np
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt                  
-dur = 50
+dur = 30
 seq = 0
 replicas=100
 dim = np.array([10,15,20])
 p_value = np.array([0.2,0.4,0.6,0.8])
 plot_matrix=np.zeros([len(p_value),len(dim)])
 if __name__ == "__main__":
+    #fig = plt.figure()
+    #plt.imshow(actual, interpolation='nearest', cmap=cm.Greys)
+    #fig.suptitle('Estado inicial')
+    #plt.savefig('p2_t0_p.png')
+    #plt.close()
     xd=0
     for d in (dim):
         xp=0
@@ -47,34 +52,23 @@ if __name__ == "__main__":
             #print(xd)
         xd=xd+1
   #ordenamiento de la matriz      
-    print(plot_matrix)
-    plot_matrix=plot_matrix*100/replicas#probabilidad
-    dim1=plot_matrix[:,0]                         
-    dim2=plot_matrix[:,1]
-    dim3=plot_matrix[:,2]
-    dim1=dim1.tolist()
-    dim2=dim2.tolist()
-    dim3=dim3.tolist()
-    #Gráfica
-    labels = ['0.2', '0.4', '0.6', '0.8']
-    x = np.arange(len(labels))  # the label locations
-    width = 0.30  # the width of the bars
+print('Matrices con Vida',plot_matrix)
+plot_matrix=(plot_matrix*100)/replicas #probabilidad
+print('Probabiliad de Vida',plot_matrix)
+dim1=plot_matrix[:,0]                         
+dim2=plot_matrix[:,1]
+dim3=plot_matrix[:,2]
 
-    fig, ax = plt.subplots()
-    rects1 = ax.bar(x - width, dim1, width, label='10')
-    rects2 = ax.bar(x, dim2, width, label='15')
-    rects3 = ax.bar(x + (width), dim3, width, label='20')
+x=np.array([0.2,0.4,0.6,0.8])
 
-# Add some text for labels, title and custom x-axis tick labels, etc.
-    ax.set_ylabel('Probabilidad de que exista vida al final de cada replica')
-    ax.set_title('Cellular Automata variando el valor de p y las dimensiones de la matriz')
-    ax.set_xticks(x, labels)
-    ax.legend()
+plt.plot(x,dim1, marker="o",label="10")
+plt.plot(x,dim2,marker="o",label="15")
+plt.plot(x,dim3,marker="o",label="20")
+plt.xlim(0.2,0.8)
+plt.ylim(0,50)
+plt.xlabel("Valor de P")
+plt.ylabel("Probabilidad de Vida")
+plt.title("Probabilidad de vida variando las dimensiones de la matriz y el valor de P")
+plt.legend()
+plt.show()
 
-    ax.bar_label(rects1, padding=3)
-    ax.bar_label(rects2, padding=3)
-    ax.bar_label(rects3, padding=3)
-
-    fig.tight_layout()
-
-    plt.show()  
