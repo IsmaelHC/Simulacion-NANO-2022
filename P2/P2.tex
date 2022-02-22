@@ -66,7 +66,7 @@ La simulación de un crecimiento se generó modificando el código \ref{R1}, de 
 \subsection{Autómata tridimensional.}
 El autómata tridimensional fue creado graficando con \texttt{matplotlib} una matriz tridimensional y utilizando la lógica descrita en la sección 3.1 se eliminaron los elementos que estuvieran rodeados por mas de 5 elementos en las tres dimensiones, dicho elementos fueron seleccionados de manera aleatoria para ser analizados por medio de la herramienta \texttt{random.choice} que selecciona un número pseudoaleatorio de matriz, columna y celda.
 \section{Resultados.}
-La figura \ref{prob} presenta la probabilidad de encontrar vida variando los valores de $p$ y de $num$ en un autómata celular, de esta gráfica podemos deducir que al existir mayores espacios que puedan ser ocupado por vida, las vecindades no están tan saturadas por lo que no se eliminan tantas celdas con vida. El valor de $p$ nos indica que tan saturado va a estar cada matriz, a valores altos de $p$ naturalmente la población va a ser mucha y por lo tanto existe menos posibilidades de vida (figura \ref{p0.8}). Encontramos un valor optimo cuando $p=0.4$ en una matriz de $num=400$ .
+La figura \ref{prob} presenta la probabilidad, obtenida con la ecuación 1, de encontrar vida variando los valores de $p$ y de $num$ en un autómata celular, de esta gráfica podemos deducir que al existir mayores espacios que puedan ser ocupado por vida, las vecindades no están tan saturadas por lo que no se eliminan tantas celdas con vida. El valor de $p$ nos indica que tan saturado va a estar cada matriz, a valores altos de $p$ naturalmente la población va a ser mucha y por lo tanto existe menos posibilidades de vida (figura \ref{p0.8}). Encontramos un valor optimo cuando $p=0.4$ en una matriz de $num=400$ .
 \begin{figure} 
     \centering
     \includegraphics[width=140mm]{prob.png} 
@@ -97,8 +97,9 @@ En la figura \ref{3d} se presenta el paso inicial y final de un autómata celula
 
 
 \section{Conclusiones.}
- Las simulaciones pseudoaleatorias son herramientas poderosas, que como un primer acercamientos, nos dan la oportunidad de observar como se pudieras ocurrir algunos crecimientos en las estructuras. En este trabajo el valor de $p$ toma gran importancia, en otras palabras, nos indica la saturación que tendremos en el sistema y por tanto las interacciones que pueden ocurrir dentro del sistema 
+ Las simulaciones pseudoaleatorias son herramientas poderosas, que como un primer acercamientos, nos dan la oportunidad de observar como podrían ocurrir algunos crecimientos en las estructuras. En este trabajo el valor de $p$ toma gran importancia, en otras palabras, nos indica la saturación que tendremos en el sistema y por tanto las interacciones que pueden ocurrir dentro del sistema 
 \bibliography{simu}
 \bibliographystyle{plainnat}
 \end{document}
+
 
