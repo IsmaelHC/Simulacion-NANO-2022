@@ -22,30 +22,32 @@
 \maketitle
 
 \section{Introducción.}
-Conocer el orden como se realizan los códigos computacionales es de suma importancia para realizar códigos eficientes, este trabajo presenta diferentes rutas para llegar a un mismo objetivo, encontrar los números primos $p$ en una secuencia numérica, y se comparan los tiempos de ejecución para concluir cuál es la mejor opción, la comparación entre los distintos métodos se realizó en  \emph{R 4.1.2}.
+Conocer el orden como se ejecutan los códigos computacionales es de suma importancia para realizar rutinas eficientes, este trabajo presenta diferentes rutas para llegar a un mismo objetivo: encontrar los números primos $p$ en una secuencia numérica. Se comparan los tiempos de ejecución para concluir cuál es la mejor opción, la comparación entre los distintos métodos se realizó en  \emph{R 4.1.2}.
 \section{Objetivos.}
 1.-Examinar las diferencias en los tiempos de ejecución variando, el orden de los números, la cantidad de núcleos asignados al cluster y la variante de la rutina para determinar si el número es primo.
+
 2.-Encontrar todos los divisores de un número (todos los enteros mayores a uno y menores al número mismo que lo dividen exactamente) y examinar si las conclusiones cambian.
-3.-Encontrar los factores y sus multiplicidades, es decir, que encuentre para  aquellos números primos $1<p\leq n  $ y sus potencias para que el producto de los factores con esas potencias de $n$ y examinar nuevamente si este cambio afectó las conclusiones.
+
+3.-Encontrar los factores y sus multiplicidades, es decir, que encuentre para $n$ aquellos números primos $1<p\leq n  $ y sus potencias para que el producto de los factores con esas potencias de $n$ y examinar nuevamente si este cambio afectó las conclusiones.
 \section{Programación en R.}
-Tomando tres rutinas desarrolladas por E.Schaeffer \citep{E.Schaeffer} para encontrar números primos, pasando de rutinas robustas a rutinas mas simplificadas que retiren obviedades de los ciclos, p. ej., si un número no es divisible por $2$, tampoco lo será para los demás números pares. (Código \ref{R1}).
-El equipo utilizado para la medición de rendimientos es una computadora portátil \emph{Acer E5-573 } con un Procesador \emph{Intel Core i5 2.20 GHz},una memoria RAM instalada de 8.0 GB y un sistema operativo de 64 bits con 4 núcleos.Para consulta más amplia consulte la referencia \citep{REPOP2}
+Fueron tomadas como base tres rutinas desarrolladas por E.Schaeffer \citep{E.Schaeffer} para encontrar números primos, pasando de rutinas robustas a rutinas mas simplificadas que retiran obviedades de los ciclos, p. ej., si un número no es divisible por $2$, tampoco lo será para los demás números pares (Código \ref{R1}).
+El equipo utilizado para la medición de rendimientos es una computadora portátil \emph{Acer E5-573 } con un Procesador \emph{Intel Core i5 2.20 GHz},una memoria RAM instalada de 8.0 GB y un sistema operativo de 64 bits con 4 núcleos.
 \lstset{basicstyle=\ttfamily, keywordstyle=\bfseries}
-\begin{lstlisting}[frame=single,numbers=left,language=R,caption=Función eliminando los elementos que no son divisibles entre $2$ para encontrar los número primos. \label{R1}]
-  primo_2 <- function(n) {
-    if (n < 4) {
+\begin{lstlisting}[frame=single,numbers=left,language=R,caption=Rutina No3 eliminando los números no divisibles entre $2$ y utilizando la funcipon \texttt{ceiling}. \label{R1}]
+  primo_3 <- function(n) {
+    if (n == 1 || n == 2) {
         return(TRUE)
     }
-    if (n %% 2 == 0) { # par
+    if (n %% 2 == 0) {
         return(FALSE)
     }
-    for (i in seq(3, max(3, n - 1), 2)) {
-        if (n %% i == 0) {
+    for (i in seq(3, max(3, ceiling(sqrt(n))), 2)) {
+        if ((n %% i) == 0) {
             return(FALSE)
         }}
     return(TRUE)}
 \end{lstlisting}  
-Cada una de las tres rutinas fueron evaluadas con los mismos números, sin embargo, para analizarlos estos se ordenaron de manera ascendente (\texttt{ot}), descendente (\texttt{it}) y aleatorio (\texttt{at}), dichas combinaciones de rutinas y ordenamiento numérico fueron evaluadas tanto para 3 núcleos y 1 núcleo por lo que para la primera parte del trabajo se realizaron $18$ pruebas diferentes (Código \ref{R1.1}).
+Cada una de las tres rutinas fue evaluada con los mismos números, sin embargo, para su análisis estas se ordenaron de manera ascendente (\texttt{ot}), descendente (\texttt{it}) y aleatorio (\texttt{at}), dichas combinaciones de rutinas y ordenamiento numérico fueron evaluadas tanto para 3 núcleos y 1 núcleo por lo que para la primera parte del trabajo se realizaron $18$ pruebas diferentes (Código \ref{R1.1}). Para consulta más amplia de los códigos véase la Referencia \citep{REPOP2}.
 \lstset{basicstyle=\ttfamily, keywordstyle=\bfseries}
 \begin{lstlisting}[frame=single,numbers=left,language=R,caption=La rutina 3 evaluada para cada ordenamiento de los números y la selección de los núcleos a utilizar. \label{R1.1}]
 registerDoParallel(makeCluster(detectCores() - 1)) #Nucleos a utilizar
@@ -79,14 +81,14 @@ potencia<- function(n) {
            }}}
 \end{lstlisting} 
 \section{Resultados.}
-La figura \ref{F1} muestra los  tiempos en segundos que tomo encontrar los números primos desde $1$ a $4000$, la Figura \ref{fig1} muestra los tiempos requeridos utilizando solamente un núcleo, de aquí, por conveniencia se decidió comparar la rutina 3 con cada ordenamiento utilizando 1 y 3 núcleos Figura \ref{fig1b}. De la \ref{fig1} se deduce que la rutina 3 es la mas eficiente, posteriormente de la \ref{fig1b} se observa un mejor rendimiento cuando se dedican 3 núcleos a esta operación. 
+La figura \ref{F1} muestra los  tiempos en segundos que tomo encontrar los números primos desde $1$ a $4000$, la Figura \ref{fig1} muestra los tiempos requeridos utilizando solamente un núcleo, de aquí, por conveniencia se decidió comparar la rutina No.3 (Código \ref{R1}) con cada ordenamiento utilizando 1 y 3 núcleos Figura \ref{fig1b}. De la Figura \ref{fig1} se deduce que la rutina No.3 es la mas eficiente, posteriormente en la \ref{fig1b} se observa un mejor rendimiento cuando se dedican 3 núcleos a esta operación. 
 
 \begin{figure}
      \centering
      \begin{subfigure}[b]{.8\textwidth}
          \centering
          \includegraphics[width=\textwidth]{fig1.png}
-         \caption{Tiempos requeridos para correr cada rutina(1,2,3),para cada orden numérico(ot,it,at).}
+         \caption{Tiempos requeridos para correr cada rutina(1,2,3),para cada orden numérico(ot,it,at), utilizando solamente un núcleo.}
          \label{fig1}
      \end{subfigure}
      \hfill
@@ -99,6 +101,104 @@ La figura \ref{F1} muestra los  tiempos en segundos que tomo encontrar los núme
      \caption{Comparación de los tiempos requeridos para cada configuración de las rutina.}
         \label{F1}
 \end{figure}
+En el Cuadro \ref{estadistica} se observan los valores para la media, máximos y mínimos de cada caso así como su desviación estándar, existe una clara reducción en los tiempos de ejecución utilizando tres núcleos, la tabulación se realizó con la función \texttt{stargazer} \citep{stargazer}. En el Cuadro \ref{estadistica2} se observan valores $p$ muy por debajo del 0.05\% cuando variamos el número de núcleos, es decir que el cambio en esta variable tiene un impacto importante en los rendimientos, así mismo observamos que variar el ordenamiento no tiene significancia, sin embargo, el uso de diferentes rutinas también tiene valores $p$ menores a 0.05\%.Los valores de $p$ fueron obtenidos con la función \texttt{wilcox.test}, véase Referencia \citep{DATA.ANALYTICS}.
+
+\begin{table}[!htbp] \centering 
+  \caption{Datos estadísticos de las rutinas, (ot\_3,it\_3 y at\_3, representan los valores para la rutina No.3 utilizando 3 núcleos)} 
+  \label{estadistica} 
+\begin{tabular}{@{\extracolsep{5pt}}lrrrrr} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+Statistic & \multicolumn{1}{r}{Promedio} & \multicolumn{1}{r}{Median} & \multicolumn{1}{r}{Max} & \multicolumn{1}{r}{Median} & \multicolumn{1}{r}{St. Dev.} \\ 
+\hline \\[-1.8ex] 
+ot\_1\_1 & 2.33 & 2.98 & 3.28 & 2.94 & 0.23 \\ 
+it\_1\_1 & 2.84 & 3.02 & 3.95 & 2.87 & 0.36 \\ 
+at\_1\_1 & 2.81 & 2.97 & 3.69 & 2.89 & 0.23 \\ 
+ot\_2\_1 & 2.30 & 2.70 & 2.95 & 2.71 & 0.14 \\ 
+it\_2\_1 & 2.60 & 2.71 & 2.83 & 2.70 & 0.08 \\ 
+at\_2\_1 & 2.53 & 2.72 & 3.11 & 2.66 & 0.18 \\ 
+ot\_3\_1 & 2.09 & 2.27 & 2.70 & 2.17 & 0.20 \\ 
+it\_3\_1 & 2.07 & 2.25 & 2.92 & 2.20 & 0.21 \\ 
+at\_3\_1 & 2.08 & 2.28 & 2.72 & 2.20 & 0.20 \\ 
+ot\_3 & 1.51 & 1.61 & 1.96 & 1.55 & 0.14 \\ 
+it\_3 & 1.50 & 1.69 & 2.34 & 1.59 & 0.25 \\ 
+at\_3 & 1.53 & 1.69 & 1.88 & 1.70 & 0.13 \\ 
+
+\hline \\[-1.8ex] 
+
+
+
+\end{tabular} 
+\end{table} 
+
+
+\begin{table}[!htbp] \centering 
+  \caption{Valores $p$ entre diferentes experimentos, variando el número de núcleos, la rutina y el ordenamiento.(ot\_3\_1 representa los tiempos para la rutina No.3 utilizando un núcleo).} 
+  \label{estadistica2} 
+\begin{tabular}{@{\extracolsep{5pt}}lrrrrr} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ \multicolumn{1}{r}{Variable 1} & \multicolumn{1}{r}{Variable 2} & \multicolumn{1}{r}{$p-value$}  \\ 
+\hline \\[-1.8ex] 
+ot\_3 & ot\_3\_1& $3.58 \times 10^{-9}$ \\ 
+ot\_3 & it\_3& $3.19 \times 10^{-1}$ \\ 
+ot\_1 & ot\_3& $5.19 \times 10^{-4}$ \\
+ot\_2 & it\_2& $1.00$ \\
+ot\_1& it\_1& $0.60$ \\
+at\_1& it\_1& $0.90$ \\
+at\_3& it\_3& $0.38$ \\
+\end{tabular} 
+\end{table} 
+Los resultados de la segunda etapa del trabajo, se presentan en la Figura \ref{F2}, nuevamente se utilizó la rutina No.3 para comprar los rendimientos, con las rutinas para encontrar todos los números divisores exactos dentro de $n$ y  para encontrar el valor de $x$ a partir de la Ecuación 2, ejecutando cada rutina con tres núcleos. No se observa un cambio importante, Figura \ref{F1}, en los tiempos requeridos para correr cada rutina, el Cuadro \ref{estadistica3} presenta los datos estadísticos para estas rutinas, se observa un tiempo promedio mayor para las tres rutinas que encuentran la potencia, sin embargo los valores de la desviación estándar no nos permiten llegar a una conclusión concreta. La rutina que encuentra el divisor exacto (ot\_residuo,it\_residuo,at\_residuo) tiene los promedios de tiempo menores, al igual que sus desviaciones estándar. Los resultados del valor p (Cuadro \ref{estadistica4}), muestran comportamientos similares a los observadores en el Cuadro \ref{estadistica2}, en cuanto a la dependencia entre las variables de cada rutina, nuevamente los ordenamientos utilizados no tienen significancia en los tiempos de ejecución, sin embargo la estructura de las rutinas si repercute en los tiempos finales.
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{fig2.png}
+    \caption{Tiempos requeridos,utilizando tres núcleos, para correr la rutina No.3 (PRIMOS), la rutina para encontrar los números divisorios exactos(RESIDUO) y para encontrar la potencia $x$ (POTENCIA).}
+    \label{F2}
+\end{figure}
+\begin{table}[!htbp] \centering 
+  \caption{Datos estadísticos de la rutina No.3, la rutina que encuentra los divisores exactos (RESIDUO) y la rutina para encontrar la potencia $x$ (POTENCIA).} 
+  \label{estadistica3} 
+\begin{tabular}{@{\extracolsep{5pt}}lrrrrr} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+Statistic & \multicolumn{1}{r}{Min} & \multicolumn{1}{r}{Promedio} & \multicolumn{1}{r}{Max} & \multicolumn{1}{r}{Median} & \multicolumn{1}{r}{St. Dev.} \\ 
+\hline \\[-1.8ex] 
+ot\_3 & 1.51 & 1.61 & 1.96 & 1.55 & 0.14 \\ 
+it\_3 & 1.50 & 1.69 & 2.34 & 1.59 & 0.25 \\ 
+at\_3 & 1.53 & 1.69 & 1.88 & 1.70 & 0.13 \\ 
+ot\_residuo & 1.55 & 1.61 & 1.83 & 1.60 & 0.07 \\ 
+it\_residuo & 1.56 & 1.61 & 1.84 & 1.59 & 0.07 \\ 
+at\_residuo & 1.55 & 1.60 & 1.74 & 1.58 & 0.05 \\ 
+ot\_potencia & 1.52 & 1.91 & 3.37 & 1.84 & 0.46 \\ 
+it\_potencia & 1.53 & 1.84 & 2.75 & 1.85 & 0.31 \\ 
+at\_potencia & 1.53 & 2.01 & 4.22 & 1.86 & 0.66 \\ 
+
+\hline \\[-1.8ex] 
+\end{tabular} 
+\end{table} 
+
+\begin{table}[!htbp] \centering 
+  \caption{Valores $p$ entre los tiempos variando las rutinas (No.3, residual y potencia) y el ordenamiento numérico.} 
+  \label{estadistica4} 
+\begin{tabular}{@{\extracolsep{5pt}}lrrrrr} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ \multicolumn{1}{r}{Variable 1} & \multicolumn{1}{r}{Variable 2} & \multicolumn{1}{r}{$p-value$}  \\ 
+\hline \\[-1.8ex] 
+at\_potencia & it\_potencia\_1& $0.45$ \\ 
+at\_potencia & ot\_potencia& $0.46$ \\ 
+it\_potencia & ot\_potencia& $0.85$ \\
+ot\_residuo& ot\_potencia& $0.02$ \\
+it\_residuo & at\_residuo& $0.39$ \\
+at\_residuo & ot\_residuo& $0.90$ \\
+ot\_residuo& it\_potencia& $0.11$ \\
+ot\_residuo& at\_potencia& $6.0 \times 10^{-3}$ \\
+\end{tabular} 
+\end{table} 
+\section{Conclusiones.}
+Es importante evitar obviedades dentro de la programación para obtener rutinas eficientes y constantes. Debemos conocer a fondo los requerimientos de cada rutina y las capacidades del equipo para destinar el número de núcleos óptimos con los que se computan los programas. 
+Los ordenamientos presentados no tienen un impacto en los tiempos de ejecución tan importante como la estructura de la rutina y el número de núcleos utilizados.
 \bibliography{simu}
 \bibliographystyle{plainnat}
 \end{document}
