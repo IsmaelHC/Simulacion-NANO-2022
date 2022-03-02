@@ -217,3 +217,5 @@ colnames(tabla)<- c("EXPERIMENTO","VARIANZA")
 
 #ggplot(data3, aes(x=treatment, y=tiempos, fill=rutina)) + geom_boxplot()
 ggplot(data2, aes(x =treatment, fill =rutina, y = tiempos)) +geom_dotplot(binaxis = "y", stackdir = "center", position = "dodge",binwidth=1/50)
+
+wilcox.test(ot_residuo,at_potencia)
