@@ -1,0 +1,181 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\setlength{\parskip}{5pt} % esp. entre parrafos
+\setlength{\parindent}{0pt} % esp. al inicio de un parrafo
+\usepackage[spanish]{babel}
+\usepackage[sort&compress,numbers]{natbib} % referencias
+\usepackage[top=25mm,left=20mm,right=20mm,bottom=25mm]{geometry} % margenes
+\usepackage{graphicx} % poner figuras
+\usepackage{color,listings}
+\usepackage{tikz}
+\usepackage{minted}
+\usepackage{caption}
+\usepackage{subcaption}
+\usetikzlibrary{automata,topaths}
+\renewcommand\lstlistingname{Código}
+\title{P4}
+\author{Ismael Crespo}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introducción.}
+Este trabajo presenta la creación de diagramas de Voronoi en dos dimensiones, la simulación de estas estructuras pueden asimilarse como los mecanismos de cristalización en la ciencia de los materiales. La creación de estos diagramas se realizó creando rutinas en \emph{R 4.1.2}.
+\section{Objetivos.}
+1.-Examina el efecto del tasa $n$ contra $k$  (por lo menos tres niveles de la densidad de semillas), en la probabilidad de una segunda grieta llegue a tocar una primera grieta (es decir, fracturando la pieza dos veces con posiciones iniciales generadas independientemente al azar, sobre varias réplicas), visualizando los resultados y aplicando métodos estadísticos.
+
+2.-Crecer celdas dinámicamente alrededor de semillas de tal forma que las semillas aparecen al azar en distintas iteraciones y crecen con una tasa exponencialmente distribuida (variable entre núcleos pero constante para un núcleo específico) hasta toparse con las demás celdas, así como se muestra en la animación. Examina los cambios producidos en el fenómeno de propagación de grietas que esta nueva forma de crear las celdas provoca, ya que las semillas resultan en celdas de tamaños distintos según su edad y su tasa, además del efecto de la posición relativa a las demás semillas.
+
+\section{Programación en R.}
+La base de programación para la generación de los diagramas de Voronoi fue obtenido de trabajos previos por E.Schaeffer \citep{E.Schaeffer}, creación de estos diagramas comienza con la colocación de $k$ cantidad de semillas aleatoriamente en una matriz de $nxn$, para crear las zonas hacia donde hubo crecimiento de cada semilla se encontró la semilla mas cercana a cada punto de la matriz (Código \ref{R1}).
+\lstset{basicstyle=\ttfamily, keywordstyle=\bfseries}
+\begin{lstlisting}[frame=single,numbers=left,language=R,caption=Busqueda de la semilla mas cercana para cada punto de la matriz\texttt{ceiling}. \label{R1}]
+ for (semilla in 1:k) {
+            dx <- columna - x[semilla]
+            dy <- fila - y[semilla]
+            dist <- sqrt(dx^2 + dy^2)
+            if (dist < menor) {
+                cercano <- semilla
+                menor <- dist
+            }
+        }
+\end{lstlisting}  
+Una vez generado el diagrama de Voronoi, fueron generadas fracturas numéricas, una primera fractura se generó ubicando un punto en la frontera de la matriz para posteriormente crecer hacia algún punto vecino, por medio la variable \texttt{prob} varia la facilidad con la que la fractura se va propagar entre fronteras o dentro de un núcleo, será cada vez mas difícil propagarse dentro de un núcleo.(Código \ref{R1.1}). Una vez generada una primera fractura numérica se generó una segunda fractura con la misma lógica, pero con un valor mayor a la anterior, y cuando esta fractura pase sobre la primera quedara registrada en un vector, el análisis de la probabilidad de que las fracturas se crucen se realizó variando la densidad de semillas en un matriz .  Para consulta más amplia de los códigos véase la referencia \citep{REPOP4}.
+\lstset{basicstyle=\ttfamily, keywordstyle=\bfseries}
+\begin{lstlisting}[frame=single,numbers=left,language=R,caption=Recorrido de una fractura dentro de un núcleo o entre fronteras. \label{R1.1}]
+ if (length(frontera) > 0) { # siempre tomamos frontera cuando haya
+            if (length(frontera) > 1) {
+                elegido <- sample(frontera, 1)
+            } else {
+                elegido <- frontera # sample sirve con un solo elemento}
+            prob <- 1 # estamos nuevamente en la frontera
+else{if (length(interior) > 0) { # no hubo frontera para propagar
+            if (runif(1) < prob) { # intentamos en el interior
+                if (length(interior) > 1) {
+                    elegido <- sample(interior, 1)
+                } else {
+                    elegido <- interior}
+                prob <- dificil * prob # mas dificil a la siguiente}
+\end{lstlisting}
+La segunda parte del trabajo varía la creación de los diagramas de Voronoi de tal forma que cada semilla tiene tasa de crecimiento diferente, por lo que habrá una diferencia entre las dimensiones de los núcleos y la ubicación de las fronteras. Estos crecimientos se crearon delimitando el crecimiento de cada semilla $k$ en cierto tiempo $t$, es decir una semilla $k=15$ no va a comenzar a expandirse hacia sus vecindades hasta que se este en un tiempo $t=15$ (véase el código \ref{R2}),posteriormente se realiza el mismo análisis de cruzamiento de fracturas en el diagrama. Se utilizo como base de crecimiento el trabajo expuesto en \citep{REPOP2}.
+
+ \begin{lstlisting}[frame=single,numbers=left,language=R,caption=Función para encontrar el valor de la potencia $x$. \label{R2}]
+for (t in 1:100){
+     ft=numeric()
+      ct=numeric()
+            for(pos in 1:n^2){
+                f <- floor((pos - 1) / n) + 1
+                c <- ((pos - 1) %% n) + 1 
+                if(zona[f,c]>0){
+                   if(zona[f,c]<=t){
+                      #print(paste(t,semilla,pos,f,c))
+                      ft=c(ft,f)
+                      ct=c(ct,c)
+                       #print(ft)
+             }}}
+        for(i in 1:length(ft)){
+          zona[max(ft[i] - 1,1) : min(ft[i] + 1, n),
+                         max(ct[i] - 1, 1): min(ct[i] + 1, n)]+
+                         [zona[max(ft[i] - 1, 1) : min(ft[i] + 1, n),
+                         max(ct[i] - 1, 1): min(ct[i] + 1, n)]==0]+
+                         <-zona[ft[i],ct[i]]]
+\end{lstlisting} 
+\section{Resultados.}
+La figura \ref{F1} muestra el crecimiento de dos fracturas en una matriz de $40 x 40$ y una densidad de semillas $k=0.5 x 40$. El diagrama de Voronoi inicial se muestra en la figura \ref{fig1a}, la \ref{fig1b} muestra el caso en el que no se cruzan las fracturas y la figura \ref{fig1c} muestra un cruzamiento de las fracturas, es deducible que las fracturas van a tener mas posibilidades de cruzar cuando tienen su propagación es entre fronteras por lo que se espera que al existir mas fronteras, es decir mas núcleos determinados por $k$ existirán mas crecimientos. 
+
+\begin{figure}
+\centering
+     \begin{subfigure}[b]{.45\linewidth}
+         \includegraphics[width=\linewidth]{p4c_4005.png}
+         \caption{Diagrama de Voronoi inicial.}
+         \label{fig1a}
+     \end{subfigure}
+     
+     \begin{subfigure}[b]{.45\linewidth}
+         \includegraphics[width=\linewidth]{p4g_nocruza_10_4005.png}
+         \caption{Las fracturas no cruzaron, es apreciable que al penetrarse en un núcleo su propagación fue reducida.}
+         \label{fig1b}
+     \end{subfigure}
+     \begin{subfigure}[b]{.45\linewidth}
+     \centering
+         \includegraphics[width=\linewidth]{p4g_cruza_2_40_05.png}
+         \caption{Cruzamiento de fractura favorecido por la propagación entre fronteras.}
+         \label{fig1c}
+     \end{subfigure}
+     \caption{Crecimiento de fracturas en un diagrama Voronoi.}
+        \label{F1}
+\end{figure}
+La figura \ref{fig2} presenta la probabilidad de que se crucen las fracturas en diferentes condiciones de densidad de semillas y dimensiones de la matriz, entendiendo que un cruzamiento de fracturas se genera debido a que tan fácil se propago, los cruzamientos se presentaran mas veces cuando no hay un número alto de núcleos $n$=20 donde la fractura pueda ingresar, pero hay suficientes fronteras para propagarse $k=0.75 \times 20$.
+\begin{figure}
+\centering
+         \includegraphics[width=150mm]{prob_voronoi1.png}
+         \caption{probabilidad de crecimiento en cada caso, en el eje $x$ se presenta las dimensiones de la matriz $n$ multiplicado por el factor $k$ para determinar el número de semillas.}
+        \label{fig2}
+\end{figure}
+
+La segunda parte del trabajo genera las fracturas con la misma lógica sin embargo la generación de los diagramas de Voronoi difiere tal como se menciona en la sección 2. La figura \ref{fig3} presenta la secuencia como se generó un diagrama de $n=40$ y $k=40 \times 0.25$ a partir de semillas con tasas de crecimientos diferentes, se puede observar que hay núcleos de mayor tamaño y que existen semillas que no lograron crecer, por lo que el número de fronteras es menor.En la figura \ref{fig4} se presentan la probabilidad de que las fracturas crucen, en la \ref{fig5} se presenta un caso para un mismo diagrama de Voronoi, donde existe cruzamiento \ref{fig5a} y donde no lo hay \ref{fig5b}.
+\begin{figure}
+\centering
+     \begin{subfigure}[b]{.35\linewidth}
+         \includegraphics[width=\linewidth]{p4s1.png}
+         \caption{Diagrama de Voronoi inicial $t=1$.}
+         \label{fig3a}
+     \end{subfigure}
+     
+     \begin{subfigure}[b]{.35\linewidth}
+         \includegraphics[width=\linewidth]{p4s6.png}
+         \caption{$t=6$.}
+         \label{fig3b}
+     \end{subfigure}
+     \begin{subfigure}[b]{.35\linewidth}
+     \centering
+         \includegraphics[width=\linewidth]{p4s11.png}
+         \caption{$t=11$.}
+         \label{fig3c}
+     \end{subfigure}
+     \begin{subfigure}[b]{.35\linewidth}
+     \centering
+         \includegraphics[width=\linewidth]{p4s21.png}
+         \caption{$t=21$.}
+         \label{fig3d}
+     \end{subfigure}
+     \begin{subfigure}[b]{.35\linewidth}
+     \centering
+         \includegraphics[width=\linewidth]{p4s29.png}
+         \caption{$t=29$.}
+         \label{fig3e}
+     \end{subfigure}
+     \caption{Crecimiento de un diagrama Voronoi con tasas de crecimiento diferentes.}
+        \label{fig3}
+\end{figure}
+\begin{figure}
+\centering
+         \includegraphics[width=150mm]{prob_voronoi2.png}
+         \caption{Probabilidad de crecimiento en un diagrama de Voronoi con tasas de crecimiento independientes para cada semilla, en el eje $x$ se presenta las dimensiones de la matriz $n$ multiplicado por el factor $k$ para determinar el número de semillas.}
+        \label{fig4}
+\end{figure}
+
+\begin{figure}
+\centering
+     \begin{subfigure}[b]{.45\linewidth}
+         \includegraphics[width=\linewidth]{p4g_cruza_9_40_10.png}
+         \caption{Existe cruzamiento entre fracturas.}
+         \label{fig5a}
+     \end{subfigure}
+     
+     \begin{subfigure}[b]{.45\linewidth}
+         \includegraphics[width=\linewidth]{p4g_nocruza_2_40_10.png}
+         \caption{Las fracturas no cruzaron, es apreciable que al penetrarse en un núcleo su propagación fue reducida.}
+         \label{fig5b}
+     \end{subfigure}
+     \caption{Propagación de dos fracturas para un mismo diagrama de Voronoi generado con semillas con diferentes tasas de crecimiento.}
+        \label{fig5}
+\end{figure}
+\section{Conclusiones.}
+La propagación de fracturas es mas probable a lo largo de las fronteras entre núcleos, por lo que las densidades de semillas en una matriz dictan la facilidad de propagación y la probabilidad de que existan cruzamientos de fracturas. La creación de diagramas con diferentes tasas de crecimiento no afecta las probabilidades de crecimiento, eso se puede deber a que el cruzamiento depende en gran parte de la posición inicial de propagación.
+\bibliography{simu}
+\bibliographystyle{plainnat}
+\end{document}
+
