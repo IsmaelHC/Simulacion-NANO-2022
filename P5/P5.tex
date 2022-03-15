@@ -1,0 +1,120 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\setlength{\parskip}{5pt} % esp. entre parrafos
+\setlength{\parindent}{0pt} % esp. al inicio de un parrafo
+\usepackage[spanish]{babel}
+\usepackage[sort&compress,numbers]{natbib} % referencias
+\usepackage[top=25mm,left=20mm,right=20mm,bottom=25mm]{geometry} % margenes
+\usepackage{graphicx} % poner figuras
+\usepackage{color,listings}
+\usepackage{tikz}
+\usepackage{minted}
+\usepackage{caption}
+\usepackage{subcaption}
+\usetikzlibrary{automata,topaths}
+\renewcommand\lstlistingname{Código}
+\title{P5}
+\author{Ismael Crespo}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introducción.}
+Este trabajo presenta la obtención del valor de una integral definida de una función normalizada a un valor por medio del método de Monte-Carlo, se pretende analizar como la cantidad de elementos que componen el área bajo la curva de la función afectan la precisión del valor obtenido al evaluado directamente por medio de la integración definida. La creación de este análisis se realizó creando rutinas en \emph{R 4.1.2}.
+\section{Objetivos.}
+1.-Estudiar estadísticamente la convergencia de la precisión del estimado del integral con en método Monte Carlo, comparando con el valor producido por Wolfram Alpha, en términos del (1) error absoluto, (2) error cuadrado y (3) cantidad de decimales correctos, aumentando el tamaño de muestra.
+
+2.-Realizar la estimación del valor de $\pi$ de Kurt \citep{kurt} y realizar el mismo análisis. 
+
+\section{Programación en R.}
+Para realizar la estimación de la integral se definió una función $f(x)$ (ecuación 1) y esta se normalizo para que el área bajo la curva sea igual a 1 $g(x)$ (ecuación 2), posteriormente se construyó un generador de números aleatorios que genera valores dentro de esta función normalizada, para realizar este análisis de realizaron 15 réplicas variando el número de elementos a generar y a manera de estimar la integral definida de $g(x)$ (ecuación 3) entre $7$ y $3$ se realiza la sumatorio de los elementos en este rango, el código \ref{R1} realiza la rutina descrita.
+\begin{equation}
+   f(x)= \frac{1}{exp(x)+exp(-x)}
+\end{equation}
+\begin{equation}
+   \int_{-\infty}^{\infty} \frac{2}{\pi} f(x) dx =1
+\end{equation}
+\begin{equation}
+   \int_{3}^{7} \frac{2}{\pi} f(x) dx =0.04883411112604931084064237
+\end{equation}
+
+\lstset{basicstyle=\ttfamily, keywordstyle=\bfseries}
+\begin{lstlisting}[frame=single,numbers=left,language=R,caption=Normalización de la función y estimación del área de bajo de la curva entre 7 y 3. \label{R1}]
+ f <- function(x) { return(1 / (exp(x) + exp(-x))) }
+g <- function(x) { return((2 / pi) * f(x)) }
+generador  <- r(AbscontDistribution(d = g)) # creamos un generador
+entre=function(n){gen=generador(n);return((pi/2)*sum(gen>=3&gen<=7)/n)}
+
+\end{lstlisting}  
+El análisis de la precisión de realizo encontrando las diferencias absolutas, las diferencias cuadradas y la exactitud de cada uno de los decimales del resultado ( véase el código \ref{R1.1}).
+ \citep{REPOP5}.
+\lstset{basicstyle=\ttfamily, keywordstyle=\bfseries}
+\begin{lstlisting}[frame=single,numbers=left,language=R,caption=Métodos de obtención de la precision de la estiamción comparada con el valor correcto obtenido de  \emph{Wolfram Alpha} \cite{wolpha}. \label{R1.1}]
+ abso=abs(correcto-estimado)
+absolutos=c(absolutos,abso)
+abso_cuad=(correcto-estimado)**2
+absolutos_cuad=c(absolutos_cuad,abso_cuad)
+decimal=3
+de=substring(as.character(estimado),1,decimal)
+dc=substring(as.character(correcto),1,decimal)
+while(de==dc){
+de=substring(as.character(estimado),1,decimal)
+dc=substring(as.character(correcto),1,decimal)
+decimal=decimal+1
+}
+
+\end{lstlisting}
+La segunda parte del trabajo realiza la estimación del valor de $\pi$ despejado de la ecuación 4. El área del círculo se encuentra generando números aleatorios de manera uniforme, que al graficar se observan como en la figura \ref{F1a}, posteriormente se encuentran los puntos cuya distancia euclidiana sea menor al radio definido previamente, por conveniencia los datos se generaron en el intervalo -1 a 1 tanto en $x$ como en $y$, por lo tanto el radio del circulo es 1, el área graficada se observa en la figura \ref{F1b}, la sumatoria de estos datos se considera el área del circulo de radio 1 y se sustituye en la ecuación 5 para estimar el valor de $\pi$ (véase el código \ref{R2}). Se realiza el mismo análisis de la precisión de la estimación en relación al valor de $\pi$ como valor correcto.
+
+\begin{equation}
+   A=\pi r^2
+\end{equation}
+\begin{equation}
+    \pi=r^2/A
+\end{equation}
+
+ \begin{lstlisting}[frame=single,numbers=left,language=R,caption=Estimación del valor de $\pi$. \label{R2}]
+for (n in num){
+for(r in 1:replicas)
+x=runif(n,-1,1)
+y=runif(n,-1,1)
+d=numeric()
+d=c(d,sqrt(x[i]**2 + y[i]**2))
+dentro=d<=1
+estimado=sum(dentro)*4/n
+\end{lstlisting} 
+\section{Resultados.}
+La figura \ref{F2}  presenta las precisiones de cada estimación variando el valor de $n$, en la figura \ref{fig2a} la se analiza las diferencias absolutas, basándose en estos resultados podríamos determinar que un valor  de $n=1000000$ nos dará valores con precisión aceptable considerando que ya no se observa un cambio sustancial para valores de n mayores, en la figura \ref{fig2b} se observa las diferencias cuadradas, utilizando este análisis como referencia nuestras deducciones cambian y utilizando un valor de $n=10000$ tendríamos valores aceptables bajo este criterio, el análisis de la exactitud del valor, es decir cuantos decimales son exactamente iguales al valor correcto se observa en la figura \ref{fig2c}, este criterio nos obliga a utilizar valores altos de $n$ para concluir que tenemos valores precisos.
+
+\begin{figure}
+\centering
+     \begin{subfigure}[b]{.45\linewidth}
+         \includegraphics[width=\linewidth]{da1.png}
+         \caption{Diferencia absoluta de la estimación en relación al valor de $n$.}
+         \label{fig2a}
+     \end{subfigure}
+     
+     \begin{subfigure}[b]{.45\linewidth}
+         \includegraphics[width=\linewidth]{dc1.png}
+         \caption{Diferencia cuadrada de la estimación en relación al valor de $n$.}
+         \label{fig2b}
+     \end{subfigure}
+     \begin{subfigure}[b]{.45\linewidth}
+     \centering
+         \includegraphics[width=\linewidth]{e1.png}
+         \caption{Exactitud de los decimales de la estimación en relación al valor de $n$.}
+         \label{fig2c}
+     \end{subfigure}
+     \caption{Diferentes análisis de la precisión de la estimación.}
+        \label{F2}
+\end{figure}
+El análisis de la precisión en la estimación de $\pi$ se presenta en la figura \ref{F3}. Las conclusiones referente a que valor de $n$ da los valores mas precisos son similares a los obtenidos en la primera parte.La figura \ref{fig3a} presenta la precisión en función de la diferencia absoluta,\ref{fig3b} presenta la precisión en función de la diferencia cuadrada y \ref{fig3c} presenta la precisión en función de la exactitud de los decimales. Al ser una rutina mas compleja se tuvo como limitante los valores máximos permisibles de $n$ para simular.
+
+
+\section{Conclusiones.}
+La estimación del área bajo la curva utilizando el método de Monte-Carlo es útil, sin embargo, para obtener resultados óptimos es necesario aumentar el número de elementos bajo la curva a manera de aumentar la definición de el área.Hay valores que, dependiendo la precisión requerida y el tipo de precisión requerida, nos dan resultados aceptables son rutinas cortas.
+\bibliography{simu}
+\bibliographystyle{plainnat}
+\end{document}
