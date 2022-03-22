@@ -9,7 +9,6 @@ pico=numeric()
 vacunacion=numeric()
 for(pv in seq(0.0,1 , by = 0.1)){
 for(repeticion in 1:rep){
-pv=0.7
 agentes <- data.frame(x = double(), y = double(),
                       dx = double(), dy = double(),
                       estado  = character())
