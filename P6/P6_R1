@@ -1,0 +1,112 @@
+l <- 1.5
+n <- 50
+pi <- 0.05
+pr <- 0.02
+v <- l / 30
+dia=numeric()
+rep=10
+pico=numeric()
+vacunacion=numeric()
+for(pv in seq(0.0,1 , by = 0.1)){
+for(repeticion in 1:rep){
+pv=0.7
+agentes <- data.frame(x = double(), y = double(),
+                      dx = double(), dy = double(),
+                      estado  = character())
+for (i in 1:n) {
+    e <- "S"
+     vacuna=runif(1)
+     if (runif(1) < pi) {
+        e <- "I"
+     }
+     if ( vacuna< pv) {
+        e <- "R"
+    }
+    agentes <- rbind(agentes, data.frame(x = runif(1, 0, l),
+                                         y = runif(1, 0, l),
+                                         dx = runif(1, -v, v),
+                                         dy = runif(1, -v, v),
+                                         estado = e))
+ 
+}
+levels(agentes$estado) <- c("S", "I", "R")
+epidemia <- integer()
+r <- 0.1
+tmax <- 100
+digitos <- floor(log(tmax, 10)) + 1
+
+
+for (tiempo in 1:tmax) {
+    infectados <- dim(agentes[agentes$estado == "I",])[1]
+    epidemia <- c(epidemia, infectados)
+    if (infectados == 0) {
+        break
+    }
+    contagios <- rep(FALSE, n)
+    for (i in 1:n) { # posibles contagios
+        a1 <- agentes[i, ]
+        if (a1$estado == "I") { # desde los infectados
+            for (j in 1:n) {
+                if (!contagios[j]) { # aun sin contagio
+                    a2 <- agentes[j, ]
+                    if (a2$estado == "S") { # hacia los susceptibles
+                        dx <- a1$x - a2$x
+                        dy <- a1$y - a2$y
+                        d <- sqrt(dx^2 + dy^2)
+                        if (d < r) { # umbral
+                            p <- (r - d) / r
+                            if (runif(1) < p) {
+                                contagios[j] <- TRUE
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    for (i in 1:n) { # movimientos y actualizaciones
+        a <- agentes[i, ]
+        if (contagios[i]) {
+            a$estado <- "I"
+        } else if (a$estado == "I") { # ya estaba infectado
+            if (runif(1) < pr) {
+                a$estado <- "R" # recupera
+            }
+        }
+        a$x <- a$x + a$dx
+        a$y <- a$y + a$dy
+        if (a$x > l) {
+            a$x <- a$x - l
+        }
+        if (a$y > l) {
+            a$y <- a$y - l
+        }
+        if (a$x < 0) {
+            a$x <- a$x + l
+        }
+        if (a$y < 0) {
+            a$y <- a$y + l
+        }
+        agentes[i, ] <- a
+    }
+    }
+pico=c(pico,max(epidemia))
+dia=c(dia,which.max(epidemia))
+vacunacion=c(vacunacion,pv)
+}}
+data_compar=data.frame(pico,vacunacion)
+ggplot(data_compar, aes(x=as.factor(vacunacion), y=pico)) + 
+    geom_boxplot(fill="slateblue", alpha=0.2) + 
+xlab("Valor de pv")+
+ylab("Máximo de contagios")+
+ggtitle("Vacunacion")
+
+data_compar=data.frame(dia,vacunacion)
+ggplot(data_compar, aes(x=as.factor(vacunacion), y=dia)) + 
+    geom_boxplot(fill="slateblue", alpha=0.2) + 
+xlab("Valor de pv")+
+ylab("Día del pico de la pandemia")+
+ggtitle("Vacunacion")
+png("p6e.png", width=600, height=300)
+plot(1:length(epidemia), 100 * epidemia / n, xlab="Tiempo",ylim=c(0,70), ylab="Porcentaje de infectados")
+graphics.off()
