@@ -1,0 +1,209 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\setlength{\parskip}{5pt} % esp. entre parrafos
+\setlength{\parindent}{0pt} % esp. al inicio de un parrafo
+\usepackage[spanish]{babel}
+\usepackage[sort&compress,numbers]{natbib} % referencias
+\usepackage[top=25mm,left=20mm,right=20mm,bottom=25mm]{geometry} % margenes
+\usepackage{graphicx} % poner figuras
+\usepackage{color,listings}
+\usepackage{tikz}
+\usepackage{minted}
+\usepackage{caption}
+\usepackage{subcaption}
+\usetikzlibrary{automata,topaths}
+\renewcommand\lstlistingname{Código}
+\title{P7}
+\author{Ismael Crespo}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introducción}
+Durante esta practica se pretende buscar un valor óptimo, el mayor evaluado dentro de una función $g(x,y)$, por medio de una búsqueda local dentro de la matriz creada, seleccionado la mejor opción en cada iteración. Se utiliza como base el trabajo presentado  E. Schaeffer \citep{E.Schaeffer} donde se realiza una búsqueda dentro de una función $f(x)$.
+\section{Objetivos}
+1.-Crea una visualización (animada) de cómo proceden por lo menos $5$ réplicas simultáneas de por lo menos $500$ pasos de la búsqueda encima de una gráfica de proyección plana.
+
+2.-Simular el recocido simulado para optimizar una función $f(x)$ , se genera para la solución actual $x$ un sólo vecino $x'=x + \Delta x$ (algún desplazamiento local). Se calcula $\delta =f(x')+f(x)$. Si $\delta > 0$ , siempre se acepta al vecino $x'$ como la solución actual ya que representa una mejora. Si $\delta <0$ , se acepta a  con probabilidad $\exp (\delta /T)$  y rechaza en otro caso. Aquí $T$ es una temperatura que decrece en aquellos pasos donde se acepta una empeora; la reducción se logra multiplicando el valor actual de $T$ con $\varepsilon<1$ , como por ejemplo $0.955$. Examina los efectos estadísticos del valor inicial de $T$ y el valor de $\varepsilon$ en la calidad de la solución, es decir, qué tan alto el mejor valor termina siendo.
+
+\section{Programación en R}
+La búsqueda comienza seleccionando un punto en la matriz, coordenada en $y$ y coordenada en $x$, este ejercicio se replica 5 veces para tener 5 puntos en donde para el primer objetivo se mueve aleatoriamente entre sus vecinos. El código \ref{R1} muestra como se generan aleatoriamente y posteriormente como es la dinámica de movimiento aleatorio de cada replica hacia sus vecinos, la mejor opción encontrada (\texttt{best}) es seleccionada utilizando un ciclo \texttt{if} con la condición de que el \texttt{best} cambiará a uno nuevo cada que una replica actual sea mayor al mejor valor obtenido hasta este tiempo.
+
+\lstset{basicstyle=\ttfamily, keywordstyle=\bfseries}
+\begin{lstlisting}[frame=single,numbers=left,language=R,caption=Generación de cada replica y movimiento aleatorio hacia los vecinos \label{R1}]
+#Generación de cada replica
+for(i in 1:replicas){
+ curr_x[i] <- sample(seq(low, high, step),1)
+ curr_y[i]<- sample(seq(low, high, step),1)
+ curr[i]<-z[as.character(curr_y[i]),as.character(curr_x[i])]
+ best_y[i]<-curr_y[i]
+ best_x[i]=curr_x[i]
+ bests[i]=curr[i]
+}
+#Movimiento hacia un vecino
+ for(i in 1:replica){
+    min_fila<-max(curr_y[i]- delta, low)
+    max_fila <-min(curr_y[i]+ delta,high)
+    min_col<-max(curr_x[i] - delta, low)
+    max_col <-min(curr_x[i] + delta,high)
+     filas<-(seq(min_fila,max_fila,delta))  
+     columnas<-(seq(min_col,max_col,delta)) 
+     #vecindad<-z[as.character(filas),as.character(columnas)]          
+     curr_y[i]<- sample(filas,1)
+     curr_x[i] <- sample(columnas,1)
+
+
+\end{lstlisting}  
+En la segunda parte del trabajo el movimiento no es completamente aleatorio, tal como se describe en el objetivo 2, cada replica se va a mover siempre que la posición vecina, seleccionada aleatoriamente, evaluada en la función sea mejor, cuando esta posición no represente una mejora en la búsqueda se va a mover con una probabilidad dependiente de la temperatura. (véase el código \ref{R1.1}).Para consulta detallada de las rutinas desarrolladas véase la referencia \citep{REPOP6}
+\lstset{basicstyle=\ttfamily, keywordstyle=\bfseries}
+\begin{lstlisting}[frame=single,numbers=left,language=R,caption=Selección de un vecino con una probabilidad dependiente de la temperatura si el valor del vecino seleccionado no es mejor. \label{R1.1}]
+ for(f in 1:length(filas)){
+         prob_y=sample(filas,1)
+         prob_x=sample(columnas,1)
+         prob <-z[format(round(prob_y, 2), 
+         nsmall = 2),format(round(prob_x, 2), nsmall = 2)] 
+         resta=curr[i]-prob
+          if(resta<0){        
+           curr_y[i]<- prob_y
+           curr_x[i] <- prob_x
+           curr[i] <-z[format(round(curr_y[i], 2), 
+           nsmall = 2),format(round(curr_x[i], 2), nsmall = 2)]
+           break  
+          }
+         if(resta>0){
+         expo=exp(-abs((resta)/temperatura))
+         pick=runif(1)
+         if(pick<expo){        
+           curr_y[i]<- prob_y
+           curr_x[i] <- prob_x
+           curr[i] <-z[format(round(curr_y[i], 2),
+           nsmall = 2),format(round(curr_x[i], 2), nsmall = 2)] 
+           temperatura=temperatura*e
+           break
+          }}}
+
+\end{lstlisting}
+Para 
+
+\section{Resultados}
+En las secuencias gráficas de la búsqueda aleatoria del mejor resultado se presenta en la figura \ref{F2}, y esta disponible de manera extensa como material complementario en el repositorio de la practica \citep{REPOP6}, se observa que la calidad búsqueda aleatoria depende de donde aparece por primera vez la replica, ya que la función en los limites evaluadas de $7$ a $12$ tanto en $x$ y $y$ acumula las mejores opciones en una sola zona.
+
+\begin{figure}
+     \begin{subfigure}[]{.25\linewidth}
+         \includegraphics[width=\linewidth]{p7_t2.png}
+         \caption{Tiempo=2.}
+         \label{1}
+     \end{subfigure}
+     \begin{subfigure}[]{.25\linewidth}
+     \centering
+         \includegraphics[width=\linewidth]{p7_t50.png}
+         \caption{Tiempo=50.}
+         \label{2}
+     \end{subfigure}
+     \begin{subfigure}[]{.25\linewidth}
+         \includegraphics[width=\linewidth]{p7_t100.png}
+         \caption{Tiempo=100.}
+         \label{3}
+     \end{subfigure}
+     \begin{subfigure}[]{.25\linewidth}
+     \centering
+         \includegraphics[width=\linewidth]{p7_t150.png}
+         \caption{Tiempo=150.}
+         \label{4}
+    \end{subfigure}
+         \begin{subfigure}[]{.25\linewidth}
+         \includegraphics[width=\linewidth]{p7_t200.png}
+         \caption{Tiempo=200.}
+         \label{5}
+     \end{subfigure}
+     \begin{subfigure}[]{.25\linewidth}
+     \centering
+         \includegraphics[width=\linewidth]{p7_t250.png}
+         \caption{Tiempo=250.}
+         \label{6}
+    \end{subfigure}
+    \begin{subfigure}[]{.25\linewidth}
+         \includegraphics[width=\linewidth]{p7_t300.png}
+         \caption{Tiempo=300.}
+         \label{7}
+    \end{subfigure}
+     \begin{subfigure}[]{.25\linewidth}
+     \centering
+         \includegraphics[width=\linewidth]{p7_t350.png}
+         \caption{Tiempo=350.}
+         \label{8}
+    \end{subfigure}
+         \begin{subfigure}[]{.25\linewidth}
+         \includegraphics[width=\linewidth]{p7_t400.png}
+         \caption{Tiempo=400.}
+         \label{9}
+     \end{subfigure}
+     \begin{subfigure}[]{.25\linewidth}
+     \centering
+         \includegraphics[width=\linewidth]{p7_t450.png}
+         \caption{Tiempo=450.}
+         \label{}
+    \end{subfigure}\hspace{20mm}
+    \begin{subfigure}[]{.25\linewidth}
+         \centering
+         \includegraphics[width=1\linewidth]{p7_t500.png}
+         \caption{Tiempo=500.}
+         \label{10}
+     \end{subfigure}
+     \caption{Búsqueda aleatoria del máximo en el plano,el circulo con la cruz dentro representa la mejor opción para cada replica en dado tiempo, el circulo representa la búsqueda actual y el punto de cruce entre la línea vertical y horizontal, representa la mejor opción de todas las replicas.}
+        \label{F2}
+\end{figure}
+Para el análisis entre la búsqueda aleatoria y a búsqueda probabilística las rutinas descrita en la sección 3 se evaluaron 15 veces y se analizaron estadísticamente, se considera el tiempo en el que se llega al resultado mayor en cada una de las búsqueda (cuadro \ref{tabla1}), igualmente se analiza la sumatoria de las 5 replicas, interpretando que a sumatorias mayores, las replicas en conjuntos se acercaron más al resultado óptimo (cuadro \ref{tabla2}). Para la rutina aleatoria durante 500 pasos no siempre se obtuvo el resultado óptimo y se excluyeron del análisis. Es claro que los tiempos en los que se obtiene el valor óptimo mejora al utilizar la segunda rutina y las replicas en conjunto se acercan a valores mas cercanos al mejor. El cuadro \ref{tabla3} presenta los valores $p$ para ambos análisis, ambas relaciones tienen valores menores a $0.05$ por lo que fueron aceptadas como significantes. 
+
+
+\begin{table}[!htbp] \centering 
+  \caption{Datos estadísticos de los tiempos en encontrar el valor máximo de las replicas.El Tiempo 1 hace referencia a las replicas aleatorias y el Tiempo 2 a la simulación de recocido térmico.  } 
+  \label{tabla1} 
+\begin{tabular}{@{\extracolsep{5pt}}lcccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+Estadistica & \multicolumn{1}{c}{N} & \multicolumn{1}{c}{Mediana} &
+\multicolumn{1}{c}{Min} & \multicolumn{1}{c}{Max} \\ 
+\hline \\[-1.8ex] 
+Tiempo 1 & 12 & 117.58330 & 22 & 230 \\ 
+Tiempo 2 & 12 & 19.91667 & 4 & 87 \\ 
+
+\hline \\[-1.8ex] 
+\end{tabular} 
+\end{table} 
+
+\begin{table}[!htbp] \centering 
+  \caption{Datos estadísticos de las sumatorias de las replicas.La Sumatoria 1 hace referencia a las replicas aleatorias y la Sumatoria 2 a la simulación de recocido térmico.} 
+  \label{tabla2} 
+\begin{tabular}{@{\extracolsep{5pt}}lcccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+Estadistica & \multicolumn{1}{c}{N} & \multicolumn{1}{c}{Mediana} & \multicolumn{1}{c}{Min} & \multicolumn{1}{c}{Max} \\ 
+\hline \\[-1.8ex] 
+Sumatoria 1 & 15 & 4.76212 & 3.82853 & 4.99983 \\ 
+Sumatoria 2 & 15 & 4.99990 & 4.99985 & 4.99993 \\ 
+\hline \\[-1.8ex] 
+\end{tabular} 
+\end{table} 
+
+\begin{table}[!htbp] \centering 
+  \caption{Valores $p$ entre las sumatorias y los tiempos de las replicas para encontrar el valor máximo.} 
+  \label{tabla3} 
+\begin{tabular}{@{\extracolsep{5pt}}lrrrrr} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ \multicolumn{1}{r}{Variable 1} & \multicolumn{1}{r}{Variable 2} & \multicolumn{1}{r}{$p-value$}  \\ 
+\hline \\[-1.8ex] 
+Sumatoria 1 & Sumatoria 2& $7.94 \times 10^{-7}$ \\ 
+Tiempo 1 & Tiempo 2& $1.553 \times 10^{-4}$ \\ 
+
+\end{tabular} 
+\end{table} 
+
+\section{Conclusiones}
+La búsqueda aleatoria es muy dependiente de la posición inicial de las replicas, la forma y los limites en los que se evalúa la función determinan el plano donde se realizará la búsqueda. La búsqueda que se rige por la mejor opción entre los vecinos y probabilístico (dependiente de la temperatura) si  la selección es peor mejora considerablemente las rutinas.
+\bibliography{simu}
+\bibliographystyle{plainnat}
+\end{document}
