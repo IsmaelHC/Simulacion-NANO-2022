@@ -128,6 +128,6 @@ paso=as.factor(c(rep(1:duracion)))
 data=data.frame((filtracion*100), treatment,paso)
 library(ggplot2)
 ggplot(data, aes(x=paso, y=filtracion*100, fill=treatment)) +
-geom_boxplot() + xlim(40, 60)+
+geom_boxplot() + xlim(45, 52)+
   xlab("Paso") + ylab("% de particulas filtradas")+labs(fill = "Tasa k/n")
 
