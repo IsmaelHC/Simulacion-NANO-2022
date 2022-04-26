@@ -89,3 +89,6 @@ distancia_cm=sqrt(((p_0$x-p_cm$x)^2)+((p_0$y-p_cm$y)^2))
 velocidad_cm=distancia_cm/tmax
 vel_total_cm=c(vel_total_cm,sum(velocidad_cm))
 }
+wilcox.test(vel_total_cm,vel_total_sc)
+mean(vel_total_sc)
+mean(vel_total_cm)
