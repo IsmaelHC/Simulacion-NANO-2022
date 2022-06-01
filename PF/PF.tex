@@ -1,0 +1,244 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\setlength{\parskip}{5pt} % esp. entre parrafos
+\setlength{\parindent}{0pt} % esp. al inicio de un parrafo
+\usepackage[spanish]{babel}
+\usepackage[sort&compress,numbers]{natbib} % referencias
+\usepackage[top=25mm,left=20mm,right=20mm,bottom=25mm]{geometry} % margenes
+\usepackage{graphicx} % poner figuras
+\usepackage{color,listings}
+\usepackage{tikz}
+\usepackage{minted}
+\usepackage{caption}
+\usepackage{subcaption}
+\usetikzlibrary{automata,topaths}
+\renewcommand\lstlistingname{Código}
+\title{Separación de moléculas de gas mediante una estructura nanoporosa con propiedades catalizadoras: Simulación y efectos de la porosidad.}
+\author{Ismael Crespo}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{Resumen}
+En el desarrollo de este trabajo se simuló el flujo de un gas con una composición inicial $B_{x}C_{y}$ a través de un medio nanoporoso con propiedades catalizadas para lograr la separación de ambos elementos y tener un flujo final con una fracción  de $B_{x}$ y otra fracción de  $C_{y}$.Se analiza el impacto del volumen poroso del medio en el desempeño de la separación del gas en las fracciones separadas. 
+\section*{Abstract}
+In this work, the flow of a gas with an initial composition $B_{x}C_{y}$ was simulated through a nanoporous medium with catalyzed properties to achieve the separation of both elements and have a final flow with a fraction of $B_{x}$ and another fraction of $C_{y}$. The impact of the porous volume of the medium on the gas separation performance in the separated fractions is analyzed.
+
+\section{Introducción}
+Disminuir el uso de combustibles fósiles es una de las principales preocupaciones de la agenda mundial para combatir el cambio climático, los reportes anuales 2022 de British Petroleum \citep{BP} y la OPEC \citep{opec} coinciden en una tendencia a la alta del consumo de hidrocarburos y en algunos países el uso de carbón se mantiene constante desde hace varios años. Esta quema de combustibles generadores de grandes cantidades de CO$_2$ es uno de las principales actividades que contribuyen a la acumulación de gases de efecto invernadero y al aumento en la temperatura de nuestro planeta (F.Skripnuk et al, 2018 \citep{Skripnuk_2018}). 
+
+Entre las alternativas que han surgido para atacar esta problemática se encuentra la producción de biogas por medio de la combustión anaerobia  de desechos orgánicos (K. Pramanik et al, 2018 \citep{PRAMANIK2019100310}, A. Parsaee et al, 2019 \citep{parsaee2019review}) y la generación de hidrógeno a través de la separación de la molécula de H$_2$ a partir de CH$_{4}$ o H$_{2}$O en la producción de hidrógeno destacan el uso de electrolizadores y el reformado de vapor como mecanismos de seperación(M. Kayfeci et al, 2019 \citep{KAYFECI201945}).
+
+El reformado de gas natural es una proceso endotérmico en donde por medio de la combustión de metano provocado de la inyección de vapor de H$_2$O o CO$_2$ en un reactor. Las principales reacciones que se llevan acabo en estos procesos son las siguientes (R. Julian et al, 2005 \citep{ROSS2005151})
+\begin{center}
+    CH$_4$ + H$_2$O = CO + 3H$_2$
+    
+    CH$_4$ + CO$_2$ = 2CO + 2H$_2$
+\end{center}
+El uso de nanocatalizadores en los procesos de reformado de gas natural ha sido investigado como una método para mejorar la eficiencia de estos procesos y disminuir la temperatura de reacción para la separación del hidrógeno, los prinicpales nanocatalizadores estudiados son metales como el Co, Ni y Mo debido a su importante actividad reactiva (F. Sharifianjazi et al, 2021 \citep{SHARIFIANJAZI2021}, S. Youngdong et al 2021 \citep{youngong}). Trabajos previos han simulado numericamente el reformado de gas natural en un medio poroso considerando las temperaturas de reacción y la velocidad de flujo en relación con el rendimiento en la producción de hidrógeno (R. Dhamrat et al, 2006 \citep{DHAMRAT2006698}). H, Zeng et al, 2019 \citep{ZENG201965}, estudió el reformado de gas natural en un medio poroso combinado con catalizadores que ayudaban a las reacciones de oxidación involucrados en el proceso.
+
+ El objetivo principal de este trabajo es estudiar el flujo de un gas en un medio poroso con propiedades catalizadoras para provocar la separación de este gas en nuevas composiciones o en gases de composición elemental. Se busca analizar el impacto del volumen de los granos en la reacción de separación y el impacto de la porosidad y el poder catalizador del medio en el proceso.
+
+\section{Método numérico y experimental para la simulación}
+La primera parte del modelo genera un medio poroso a partir de la ubicación de granos en la matriz de $n \times n$ y su crecimiento, las moléculas de gas no podrán ocupar estas posiciones y cuando estén en contacto con estos granos en repetidas ocasiones se generará la conversión de esta a otra. Este trabajo utiliza como base la dinámica de movimiento de partículas en 2 dimensiones ($x$,$y$) que utiliza en trabajos previos E. Schaeffer \citep{E.Schaeffer} donde se considera los espacios vacíos en sus alrededores como posibles posiciones futuras dentro de un espacio matricial de $n \times n$. En este trabajo se considera la posición ($x+1,y$) como la primer opción de movimiento para provocar un flujo de moléculas de gas orientado en una dirección, si esta posición en el plano esta ocupado por un grano catalizado le dirección a tomar aleatoriamente sería la posición ($x+1,y+1$) ó ($x+1,y-1$) como se muestra en la figura \ref{movimiento}. Para simular una inyección de flujo constante en cada iteración se generan nuevas moléculas de gas en $x=1$, $y=1:n$, el desempeño de la separación se evalúa con la medición de moléculas separadas al final del reactor (figura \ref{reactor}).
+
+Se simulo cada experimento 5 ocasiones iterando 250 veces la inyección constante de 10 moléculas de gas y el movimiento antes descrito para cada molécula. Cuando una molécula estuvo en contacto con material catalizado durante 50 ocasiones en alguno de sus ejes esta molécula cambiará de composición. Consúltese la referencia \citep{REPOPPF} para ver el código del modelo.
+\begin{figure}[]
+     \centering 
+         \includegraphics[width=.7\linewidth]{movimiento.png}
+     \caption{Dinámica de movimiento, el número en cada caso representa el orden donde se intentará mover cada molécula de gas, si no hay espacio vacío en la iteración la molécula permanecerá en la posición en la que se encontraba al inicio de la iteración.}
+        \label{movimiento}
+\end{figure}
+\begin{figure}[]
+     \centering 
+         \includegraphics[width=.7\linewidth]{REACTOR.png}
+     \caption{Diseño experimental de inyección constante y medición.}
+        \label{reactor}
+\end{figure}
+\subsection{Medio poroso}
+Se generaron 3 diferentes medios porosos con fracciones porosas adimensionales 1,2 y 3, que indican el tiempo de crecimiento de los granos iniciales, en la figura \ref{medioporoso} se presentan los tres medios porosos generados. La composición de los granos del medio es tal que fomenta la separación del gas, por lo que al estar en contacto el gas con la superficie de cada grano este comenzara a separarse.
+\begin{figure}
+\centering
+     \begin{subfigure}[]{.3\linewidth}
+         \includegraphics[width=\linewidth]{mporoso1.png}
+         \caption{Porosidad=1.}
+        
+     \end{subfigure}
+     \begin{subfigure}[]{.3\linewidth}
+         \includegraphics[width=\linewidth]{mporoso2.png}
+         \caption{Porosidad=2.}
+       
+     \end{subfigure}
+      \begin{subfigure}[]{.3\linewidth}
+         \includegraphics[width=\linewidth]{mporoso3.png}
+         \caption{Porosidad=3.}
+        
+     \end{subfigure}
+     \caption{Medios porosos para flujo de gas, las zonas huecas al inicio y al final son las zonas de inyección y medición.}
+        \label{medioporoso}
+\end{figure}
+\section{Resultados}
+La figura \ref{reaccion} presenta las condiciones del reactor en T=250 cuando el tiempo en contacto necesario para la separación del gas es $r=50$, en la figura \ref{reaccion2} se presenta el termino de la simulación para la  consúltese el material adicional disponible \cite{REPOPPF} para ver las secuencias gráficas de cada simulación.
+\begin{figure}
+\centering
+     \begin{subfigure}[]{.3\linewidth}
+         \includegraphics[width=\linewidth]{p1250.png}
+         \caption{t=250, Porosidad=1.}
+       
+     \end{subfigure}
+     \begin{subfigure}[]{.3\linewidth}
+         \includegraphics[width=\linewidth]{p2250.png}
+         \caption{T=250, Porosidad=2.}
+        
+     \end{subfigure}
+      \begin{subfigure}[]{.3\linewidth}
+         \includegraphics[width=\linewidth]{p3250.png}
+         \caption{T=250, Porosidad=3.}
+         
+     \end{subfigure}
+     \caption{Final de la simulación para cada medio poroso con un valor de catalizador $r=50$.}
+        \label{reaccion}
+\end{figure}
+\begin{figure}
+\centering
+     \begin{subfigure}[]{.3\linewidth}
+         \includegraphics[width=\linewidth]{p11250.png}
+         \caption{t=250, Porosidad=1.}
+        
+     \end{subfigure}
+     \begin{subfigure}[]{.3\linewidth}
+         \includegraphics[width=\linewidth]{p21250.png}
+         \caption{T=250, Porosidad=2.}
+         
+     \end{subfigure}
+      \begin{subfigure}[]{.3\linewidth}
+         \includegraphics[width=\linewidth]{p31250.png}
+         \caption{T=250, Porosidad=3.}
+         
+     \end{subfigure}
+     \caption{Final de la simulación para cada medio poroso con un valor de catalizarod $r=100$.}
+        \label{reaccion2}
+\end{figure}
+El análisis del desempeño de cada combinación de porosidad y capacidad catalítica se evalúa con la medición de los gases en la zona destinada a esta al final del reactor poroso, tomando la medición del volumen de B y A respectivamente y la relación del total recuperado, el volumen total inyectado al $T=250$ es de 2510 unidades de gas A$_x$B$_y$. En las figura \ref{AB} se observa el volumen recuperado de A$_x$B$_y$ y B$_y$ al final de cada experimento. La figura \ref{total} presenta el total de gas recuperado en la zona de medición(fig \ref{total1}) y la fracción de B$_y$ (fig \ref{total2}) sobre el volumen total de gas recuperado:
+
+\begin{equation}
+    FB_y= \frac{VB_{y}}{VB_{y} +VA_{x}B_{y} }
+\end{equation}
+
+
+\begin{figure}
+\centering
+     \begin{subfigure}[]{1\linewidth}
+         \includegraphics[width=\linewidth]{B.png}
+         \caption{Volumen de B$_y$.}
+     \end{subfigure}
+     \begin{subfigure}[]{1\linewidth}
+         \includegraphics[width=\linewidth]{A.png}
+         \caption{Volumen de A$_x$B$_y$}
+       \end{subfigure} 
+     \caption{Volúmenes recuperados de la composición original de gas y la composición separada.}
+        \label{AB}
+\end{figure}
+\begin{figure}
+\centering
+     \begin{subfigure}[]{1\linewidth}
+         \includegraphics[width=\linewidth]{total de gas.png}
+         \caption{Total de gas recuperado A$_x$B$_y$.}
+         \label{total1}
+     \end{subfigure}
+     \begin{subfigure}[]{1\linewidth}
+         \includegraphics[width=\linewidth]{fraccion.png}
+         \caption{Fracción de B$_y$}
+          \label{total2}
+       \end{subfigure} 
+     \caption{Volúmenes recuperados de la composición original de gas y la composición separada.}
+        \label{total}
+\end{figure}
+Evaluando la significancia de la modificación del poder catalizador por medio de un \texttt{wilcox.test}  se encontró que para porosidades 1 y 2 si influye el volumen de B$_y$ recuperado (P. value$<$0.05) pero para la porosidad de 3 no mostró significancia (P. value$>$0.05). El valor de la porosidad si mostró significancia en todos los casos (P. value$<$0.05) en el volumen de B$_y$ recuperado, los mismos resultados se obtuvieron en cuanto al volumen de A$_x$ recuperado y el impacto de la modificación de la porosidad y el catalizador. En cuanto al volumen total de gas recuperado se observa que este no se ve afectado por la porosidad 1 y 2 (P. value$>$0.05), sin embargo para la porosidad 3 se observo significancia con relación a la porosidad 1 y 2, pero se observó una desviación estándar grande (159.20) debido a la geometría del medio poroso y la afectación a la permeabilidad.Los cuadros \ref{a}, \ref{b}, \ref{r} y \ref{f} presentan los datos estadísticos para cada análisis del desempeño del proceso variando la porosidad y el catalizador.
+\begin{table}[!htbp] \centering 
+  \caption{Volumen de A$_x$B$_y$ recuperado según la porosidad (P) y el catalizador (r).} 
+  \label{a} 
+\begin{tabular}{@{\extracolsep{5pt}}lccccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+Statistic & \multicolumn{1}{c}{N} & \multicolumn{1}{c}{Mean} & \multicolumn{1}{c}{St. Dev.} & \multicolumn{1}{c}{Min} & \multicolumn{1}{c}{Max} \\ 
+\hline \\[-1.8ex] 
+P=1 r=50 & 5 & 669 & 27 & 632 & 691 \\ 
+P=1 r=100 & 5 & 958 & 11 & 943 & 972 \\ 
+P=2 r=50 & 5 & 108 & 60 & 12 & 171 \\ 
+P=2 r=100 & 5 & 577 & 58 & 519 & 651 \\ 
+P=3 r=50 & 5 & 27 & 35 & 0 & 68 \\ 
+P=3 r=100 & 5 & 120 & 100 & 39 & 274 \\ 
+\hline \\[-1.8ex] 
+\end{tabular} 
+\end{table} 
+
+\begin{table}[!htbp] \centering 
+  \caption{Volumen de B$_y$ recuperado según la porosidad (P) y el catalizador (r).} 
+  \label{b} 
+\begin{tabular}{@{\extracolsep{5pt}}lccccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+Statistic & \multicolumn{1}{c}{N} & \multicolumn{1}{c}{Mean} & \multicolumn{1}{c}{St. Dev.} & \multicolumn{1}{c}{Min} & \multicolumn{1}{c}{Max} \\ 
+\hline \\[-1.8ex] 
+P=1 r=50  & 5 & 311 & 24 & 290 & 347 \\ 
+P=1 r=100  & 5 & 20 & 9 & 9 & 33 \\ 
+P=2 r=50  & 5 & 870 & 57 & 807 & 962 \\ 
+P=2 r=100  & 5 & 400 & 54 & 326 & 453 \\ 
+P=3 r=50  & 5 & 687 & 123 & 507 & 853 \\ 
+P=3 r=100 & 5 & 625 & 89 & 530 & 745 \\ 
+\hline \\[-1.8ex] 
+\end{tabular} 
+\end{table} 
+
+
+\begin{table}[!htbp] \centering 
+  \caption{Volumen total recuperado de ambos gases según la porosidad (P) y el catalizador (r).} 
+  \label{r} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}}lccccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+Statistic & \multicolumn{1}{c}{N} & \multicolumn{1}{c}{Mean} & \multicolumn{1}{c}{St. Dev.} & \multicolumn{1}{c}{Min} & \multicolumn{1}{c}{Max} \\ 
+\hline \\[-1.8ex] 
+P=1 r=50 & 5 & 979 & 5 & 972 & 985 \\ 
+P=1 r=100 & 5 & 978 & 2 & 976 & 981 \\ 
+P=2 r=50 & 5 & 978 & 3 & 974 & 981 \\ 
+P=2 r=100 & 5 & 977 & 6 & 972 & 987 \\ 
+P=3 r=50 & 5 & 714 & 147 & 507 & 921 \\ 
+P=3 r=100 & 5 & 745 & 159 & 582 & 918 \\ 
+\hline \\[-1.8ex] 
+\end{tabular} 
+\end{table} 
+
+\begin{table}[!htbp] \centering 
+  \caption{Fracción de B$_y$ según la porosidad (P) y el catalizador (r) } 
+  \label{f} 
+\begin{tabular}{@{\extracolsep{5pt}}lccccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+Statistic & \multicolumn{1}{c}{N} & \multicolumn{1}{c}{Mean} & \multicolumn{1}{c}{St. Dev.} & \multicolumn{1}{c}{Min} & \multicolumn{1}{c}{Max} \\ 
+\hline \\[-1.8ex] 
+P=1 r=50 & 5 & 0.32 & 0.03 & 0.30 & 0.35 \\ 
+P=1 r=100 & 5 & 0.02 & 0.01 & 0.01 & 0.03 \\ 
+P=2 r=50 & 5 & 0.89 & 0.06 & 0.83 & 0.99 \\ 
+P=2 r=100 & 5 & 0.41 & 0.06 & 0.33 & 0.47 \\ 
+P=3 r=50 & 5 & 0.97 & 0.04 & 1 & 1 \\ 
+P=3 r=100 & 5 & 0.85 & 0.10 & 0.70 & 0.94 \\ 
+\hline \\[-1.8ex] 
+\end{tabular} 
+\end{table} 
+
+\section{Conclusiones}
+ \begin{enumerate}
+     \item  El poder del catalizador tiene significancia mejorando la separación y recuperación del gas B$_y$ para las porosidades 1 y 2.
+     \item  El volumen mas grande de B$_y$ recuperado se logró con la porosidad 1 y el catalizador 50. 
+     \item Es claro observar que a el catalizador 50 y el medio poroso 3 muestran el mejor desempeño en relación a la fracción de B$_y$, sin embargo el volumen total recuperado no es el mejor, esto se debe a que la estructura porosa genera tortuosidad y disminuye la permeabilidad del medio atrapando grandes cantidades de gas entre sus poros.
+     \item Para la porosidad 3 el poder del catalizador disminuye la significancia debido a que se garantiza un prolongado contacto entre el gas y la estructura porosa a lo largo del flujo.
+     \item Se propone, para trabajos futuros, realizar modificaciones de la permeabilidad, como fracturas a lo largo del medio para mejorar el volumen de B$_y$ recuperado. 
+ \end{enumerate}
+\bibliography{simu}
+\bibliographystyle{plainnat}
+\end{document}
