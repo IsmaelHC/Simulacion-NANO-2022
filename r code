@@ -1,0 +1,138 @@
+data=read.csv("cumm_baytex_eagleford.csv",header=FALSE)  #data read
+data[is.na(data)]=0
+
+PREYEAR=2020  #PREYEAR
+IPFACTOR=0.5  #COMPARISSON WITH IP
+PREFACTOR=2  #NOT TENDENCY
+STARTANALYSIS= 2020  #YEAR OF START 
+PERIOD=48 #Months for analysis
+
+
+stimwells=0
+ipyearstimwells=0
+stimyear=0
+yearcount=1
+while(data[yearcount,1]<PREYEAR){
+yearcount=yearcount+1
+}
+
+for (i in 2: dim(data)[2]){
+########################################
+ 
+ API=data[1,i]
+ cumm=data[2:dim(data)[1],i]
+ 
+ if(cumm[yearcount]==0){     #FOUND REAL IP START  
+  while(cumm[yearcount]==0){
+    yearcount=yearcount+1
+   }
+ }
+  start=yearcount
+  cumm=data[start:dim(data)[1],i]  #REARRANGE DATA WITH IP BOUNDARIES
+  year=data[start:dim(data)[1],1] 
+  ipyear=year[1]
+  
+  for(j in 1:length(cumm)){    #ELIMINATE ZEROS FROM CUMM
+   if(cumm[j]==0){
+     cumm[j]=cumm[j-1]
+     }}
+ 
+ ######################################
+t=length(cumm)                    
+produced=0
+cummstim=0
+yearstim=0
+prodstim=0
+time=0
+startstim=0
+startstimcumm=0
+startstiyear=0
+stimtime=0
+for(i in 2:t){
+    producedi=cumm[i]-cumm[i-1]    #production find with cummulative
+    produced=c(produced,producedi) #production vector formation
+}
+
+t=length(produced)
+
+
+bestip=max(produced[1:min(5,length(produced))])
+startanalysis=1
+while(year[startanalysis]<STARTANALYSIS){
+startanalysis=startanalysis+1
+}
+endanalysis=min(startanalysis+PERIOD,length(produced))  #PERIOD OF ANALYSIS FOR RESTIM
+
+
+for(k in startanalysis:endanalysis){
+      if(produced[k]>(bestip*IPFACTOR)){ #comparisson of month production with IP
+         cummstim=c(cummstim,cumm[k])  #save production month
+         prodstim=c(prodstim,produced[k])  #save production month
+         yearstim=c(yearstim,year[k])     #save year
+         time=c(time,k)                      #save production month
+           
+        }
+    }
+
+
+if(length(cummstim)>1){
+ prevprod=0
+ for(i in 2:length(cummstim)){
+   for(j in 1:10){
+   prevprod=c(prevprod,produced[time[i]-j])
+   }
+
+   if(all(prodstim[i]>(prevprod*PREFACTOR))){  #production rate is estim not trend
+   startstim=c(startstim,produced[time[i]-1])  #save the  production pre restim start
+   startstimcumm=c(startstimcumm,cumm[time[i]-1])
+   startstiyear=c(startstiyear,year[time[i]-1])
+   
+   stimtime=c(stimtime,time[i]-1)        #save month of restim
+   stimpoints=length(stimtime)           #incase more than one restim
+    
+    }}}
+  if(length(stimtime)>1){    #probable restim
+   stimwells=c(stimwells,API)
+   ipyearstimwells=c(ipyearstimwells,ipyear)
+   
+   well_name=paste("API",as.character(API),sep = "")
+   #assign(well_name,cumm)
+   #png(paste(well_name,".png",sep=""), width = 800, height = 600)
+   #plot(get(well_name),type="l",ylab="boed",xlab="Month",main=well_name)
+   #points(stimtime[2:length(stimtime)],startstimcumm[2:length(startstimcumm)],col="red")
+   #dev.off()
+   assign(well_name,produced)
+   png(paste(well_name,"produced.png",sep=""), width = 800, height = 600)
+   plot(get(well_name),type="l",ylab="boed",xlab="Month",main=well_name)
+   points(stimtime[2:length(stimtime)],startstim[2:length(startstim)],col="red")
+   #grid(nx = NULL, ny = NULL,
+    # lty = 2,      # Grid line type
+     #col = "gray", # Grid line color
+     #lwd = 2)      # Grid line width
+   dev.off()
+
+  }
+ }
+ }
+
+paste("Possible restim wells",length(stimwells)-1)
+paste("API",stimwells[2:length(stimwells)],sep = "")
+df <- data.frame(stimwells = stimwells[2:length(stimwells)], ipyear = ipyearstimwells[2:length(ipyearstimwells)])
+write.csv(df, "api.csv", row.names = FALSE)
+
+#plot(get(well_name),type="l",ylab="",main=well_name)
+#points(stimtime[2:length(stimtime)],startstim[2:length(startstim)])
+  #print("API")
+  #print(API)
+  #print("cumm")
+  #print(cumm)
+  #print("produced")
+  #print(produced)
+  #print("bestip")
+  #print(bestip)
+  #print("prodstim")
+  #print(prodstim)
+  #print("cummstim")
+  #print(cummstim)
+  #print("time")
+  #print(time)
